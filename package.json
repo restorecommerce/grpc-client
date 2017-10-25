@@ -12,7 +12,7 @@
   "keywords": [
     "restore",
     "commerce",
-    "service",
+    "gRPC",
     "client"
   ],
   "typings": "lib/index.d.ts",
