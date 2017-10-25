@@ -13,7 +13,7 @@ const fixedPublisher = require('./fixedPublisher').fixedPublisher;
  * @param  {generator} factory   Converts instance strings into endpoints.
  * @param  {Object} logger
  */
-async function staticPublisher(instances: string[], factory: any,
+export async function staticPublisher(instances: string[], factory: any,
                             logger: any): Promise<any> {
   const endpoints = co(function* send(): any {
     const epoints = [];
