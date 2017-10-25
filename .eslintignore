@@ -1,0 +1,2 @@
+protos/io/restorecommerce/*.proto
+protos/grpc/**/**/*.proto
