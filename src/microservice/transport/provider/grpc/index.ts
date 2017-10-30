@@ -90,9 +90,9 @@ function makeBiDirectionalStreamClientEndpoint(client: any,
         // TODO context to options
         call.write(request);
       },
-      async read(): Promise<any> {
+      * read(): any {
         // TODO has options?
-        return await function r(cb: any): any {
+        return yield function r(cb: any): any {
           if (responses.length) {
             cb(null, responses.shift());
           } else if (end) {
@@ -139,8 +139,8 @@ function makeRequestStreamClientEndpoint(client: any, methodName: any): any {
         // TODO context to options
         call.write(request);
       },
-      async end(): Promise<any> {
-        return await function r(cb: any): any {
+      * end(): any {
+        return yield function r(cb: any): any {
           call.end();
           if (responses.length) {
             cb(null, responses.shift());
@@ -177,8 +177,8 @@ function makeResponseStreamClientEndpoint(client: any, methodName: any): any {
       }
     });
     return {
-      async read(): Promise<any> {
-        return await function r(cb: any): any {
+      * read(): any {
+        return yield function r(cb: any): any {
           if (responses.length) {
             cb(null, responses.shift());
           } else if (end) {
@@ -193,8 +193,8 @@ function makeResponseStreamClientEndpoint(client: any, methodName: any): any {
 }
 
 function makeNormalClientEndpoint(client: any, methodName: any): any {
-  return async function normalClientEndpoint(request: any, context: any):
-    Promise<any> {
+  return function* normalClientEndpoint(request: any, context: any):
+    any {
     const options: any = {};
     if (_.has(context, 'timeout')) {
       options.deadline = Date.now() + context.timeout;
@@ -214,7 +214,7 @@ function makeNormalClientEndpoint(client: any, methodName: any): any {
       };
     }
     try {
-      const result = await callEndpointWrapper();
+      const result = yield callEndpointWrapper();
       const response = {
         error: null,
         data: result,
@@ -313,7 +313,7 @@ export class Client {
    * @param {string} instance URL starting with schema "grpc:"
    * @return {generator} Returns the endpoint.
    */
-  async makeEndpoint(method: string, instance: string): Promise<any> {
+  * makeEndpoint(method: string, instance: string): any {
     const u = url.parse(instance, true, true);
     if (u.protocol !== 'grpc:') {
       throw new Error('not a grpc instance URL');
@@ -342,7 +342,7 @@ export class Client {
           });
         };
       };
-      await wait();
+      yield wait();
     }
     const methods = this.service.service;
     const methodDef = _.find(methods, (m) => {

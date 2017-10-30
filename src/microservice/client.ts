@@ -67,14 +67,12 @@ const pipe = require('./transport/provider/pipe');
 registerTransport(pipe.Name, pipe.Client);
 
 async function getEndpoint(loadBalancer: any): Promise<any> {
-  return await (co(async function getEndpointFromLB(): Promise<any> {
+  return await (co(function* getEndpointFromLB(): any {
     const lb = loadBalancer.next();
     if (lb.done) {
       throw new Error('no endpoints');
     }
     return lb.value;
-  }).catch((err) => {
-    throw err;
   }));
 }
 
@@ -202,10 +200,10 @@ function assertTimeout(fn: any, timeout: any, logger?: any): any {
 
 // returns a factory which turns an instance into an endpoint via a transport provider
 function generalFactory(method: any, transports: any, logger: any): any {
-  return async function makeEndpoints(instance: any): Promise<any> {
+  return function* makeEndpoints(instance: any): Promise<any> {
     for (let i = 0; i < transports.length; i += 1) {
       try {
-        const endpoint = await transports[i].makeEndpoint(method, instance);
+        const endpoint = yield* transports[i].makeEndpoint(method, instance);
         return endpoint;
       } catch (e) {
         logger.debug('generalFactory transport.makeEndpoint',
@@ -353,12 +351,12 @@ export class Client extends EventEmitter {
    *
    * @return {Object} Service with endpoint methods.
    */
-  async connect(): Promise<any> {
+  * connect(): any {
     const logger = this.logger;
     const transports = this.transports;
     const endpoints = this.endpoints;
     const middleware = this.middleware;
-    const s = await co(async function createService(): Promise<any> {
+    const s = yield co(function* createService(): any {
       const service = {};
       _.forIn(endpoints, (e, name) => {
         const factory = generalFactory(name, transports, logger);
