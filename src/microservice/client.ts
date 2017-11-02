@@ -200,7 +200,7 @@ function assertTimeout(fn: any, timeout: any, logger?: any): any {
 
 // returns a factory which turns an instance into an endpoint via a transport provider
 function generalFactory(method: any, transports: any, logger: any): any {
-  return function* makeEndpoints(instance: any): Promise<any> {
+  return function* makeEndpoints(instance: any): any {
     for (let i = 0; i < transports.length; i += 1) {
       try {
         const endpoint = yield* transports[i].makeEndpoint(method, instance);
