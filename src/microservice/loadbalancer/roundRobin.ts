@@ -1,13 +1,5 @@
-'use strict';
-
-import * as co from "co";
-
 async function send(publisher: any, counter: any): Promise<any> {
-  const p = publisher.next();
-  if (p.done) {
-    throw new Error('publisher is done');
-  }
-  const endpoints = await p.value;
+  const endpoints = await (publisher);
   if (!endpoints || endpoints.length === 0) {
     throw new Error('publisher did not return endpoints');
   }
@@ -17,19 +9,12 @@ async function send(publisher: any, counter: any): Promise<any> {
 /**
  * roundRobin is a simple load balancer that returns each of the published endpoints in sequence
  *
- * @param  {generator} publisher An endpoint publisher.
+ * @param  publisher An endpoint publisher.
  */
-export async function roundRobin(publisher: any): Promise<any> {
+export async function roundRobin(publisher: any, logger: any): Promise<any> {
   if (!publisher) {
     throw new Error('missing publisher');
   }
   let counter = 0;
-  while (publisher !== undefined) {
-    await co(send(publisher, counter)).catch((err) => {
-      throw err;
-    });
-    counter += 1;
-  }
+  return await (send(publisher, counter));
 }
-
-// module.exports.roundRobin = roundRobin;

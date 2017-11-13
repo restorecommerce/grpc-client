@@ -1,7 +1,5 @@
-'use strict';
-
-const loadBalancerLib = require('./loadbalancer');
-const chainMiddleware = require('./endpoint').chain;
+import * as loadBalancerLib from './loadbalancer';
+import { chain as chainMiddleware } from './endpoint';
 import * as co from 'co';
 import * as _ from 'lodash';
 import { EventEmitter } from 'events';
@@ -13,7 +11,6 @@ const loadBalancers: any = {};
 export function registerLoadBalancer(name: string, provider: any): void {
   loadBalancers[name] = provider;
 }
-// module.exports.registerLoadBalancer = registerLoadBalancer;
 
 function makeRoundRobinLB(config: any, publisher: any, logger: any): any {
   return loadBalancerLib.roundRobin(publisher, logger);
@@ -23,6 +20,7 @@ function makeRandomLB(config: any, publisher: any, logger: any): any {
   const seed = config.seed || Math.random();
   return loadBalancerLib.random(publisher, seed, logger);
 }
+
 registerLoadBalancer('roundRobin', makeRoundRobinLB);
 registerLoadBalancer('random', makeRandomLB);
 
@@ -33,12 +31,12 @@ const publishers = {};
  * register endpoint publishers
  *
  * @param  {string} name     Publisher name
- * @param  {generator} provider generator which can be iterated
+ * @param  {Promise} provider Promise which can be awaited
  */
 export function registerPublisher(name: string, provider: any): void {
   publishers[name] = provider;
 }
-// module.exports.registerPublisher = registerPublisher;
+
 // register default publishers
 function makeStaticPublisher(config: any, factory: any, logger: any): any {
   return loadBalancerLib.staticPublisher(config.instances, factory, logger);
@@ -57,7 +55,7 @@ const transportProviders = {};
 export function registerTransport(name: string, transport: any): void {
   transportProviders[name] = transport;
 }
-// module.exports.registerTransport = registerTransport;
+
 // register default transport providers
 const grpc = require('./transport/provider/grpc');
 
@@ -67,13 +65,8 @@ const pipe = require('./transport/provider/pipe');
 registerTransport(pipe.Name, pipe.Client);
 
 async function getEndpoint(loadBalancer: any): Promise<any> {
-  return await (co(function* getEndpointFromLB(): any {
-    const lb = loadBalancer.next();
-    if (lb.done) {
-      throw new Error('no endpoints');
-    }
-    return lb.value;
-  }));
+  const lbValue = await loadBalancer;
+  return lbValue;
 }
 
 // handles retries, timeout, middleware, calling the loadBalancer and errors
@@ -92,16 +85,13 @@ function makeServiceEndpoint(name: string, middleware: any,
       currentAttempt: 1,
     });
     logger.debug(`calling endpoint with request ${request}`);
-    for (let i = 1; i <= attempts; i += 1) {
-      context.currentAttempt = i;
-      logger.debug(`attempt ${i}/${attempts} calling endpoint with request ${request}`);
-      try {
+    const retry = require('async-retry');
+    let i = 1;
+    try {
+      return await retry(async () => {
+        i += 1;
         let endpoint = await getEndpoint(loadBalancer);
-        if (middleware.length !== 0) {
-          const chain = chainMiddleware(middleware);
-          endpoint = await chain(endpoint);
-        }
-        const result = await endpoint(request, context);
+        const result = await (endpoint(request, context));
         if (result.write || result.read) {
           return result;
         }
@@ -115,22 +105,22 @@ function makeServiceEndpoint(name: string, middleware: any,
             case 'data loss':
               logger.error(`attempt ${i}/${attempts} error`, result.error);
               errs.push(result.error);
-              // retry
-              continue;
+              // retries
             default:
               return await result;
           }
         }
-        return await result;
-      } catch (err) {
-        logger.error(`attempt ${i}/${attempts} error`, err);
-        errs.push(err);
-        if (err.message === 'call timeout') {
-          logger.debug(`attempt ${i}/${attempts} returning with call timeout`);
-          return {
-            error: errs,
-          };
-        }
+        const res = await result;
+        return res;
+      }, { retries: attempts });
+    } catch (err) {
+      logger.error(`attempt ${i}/${attempts} error`, err);
+      errs.push(err);
+      if (err.message === 'call timeout') {
+        logger.debug(`attempt ${i}/${attempts} returning with call timeout`);
+        return {
+          error: errs,
+        };
       }
     }
     return {
@@ -140,70 +130,25 @@ function makeServiceEndpoint(name: string, middleware: any,
   return async function handleTimeout(req: any, options: any): Promise<any> {
     if (options && options.timeout) {
       const gen = e(req, options);
-      const thunk = (cb) => {
-        co(gen).catch(cb).then((result) => {
-          cb(null, result);
-        });
-      };
-      return await co(async function checkTimeout(): Promise<any> {
-        return assertTimeout(thunk, options.timeout);
-      }).catch((error) => {
-        if (error.message.startsWith('timeout')) {
-          const err = new Error('call timeout');
-          const res: any = gen.then((resolved) => Promise.reject(err));
-          return res.value;
-        }
-        return {
-          error,
-        };
+      let timeout = new Promise((resolve, reject) => {
+        let id = setTimeout(() => {
+          clearTimeout(id);
+          reject('call timeout in ' + options.timeout + ' ms.');
+        }, options.timeout);
       });
+
+      return Promise.race([await gen, timeout]);
     }
-    return await co(async function callEndpoint(): Promise<any> {
-      return await e(req, options);
-    }).catch((err) => {
-      return {
-        error: err,
-      };
-    });
-  };
-}
-
-
-function assertTimeout(fn: any, timeout: any, logger?: any): any {
-  return function (done) {
-    if (typeof timeout === 'string')
-      timeout = parseInt(timeout);
-    if (typeof timeout !== 'number')
-      throw new TypeError('invalid timeout');
-
-    let ctx = this;
-    let called = false;
-
-    let id = setTimeout(function () {
-      let err: any = new Error('timeout of ' + timeout + 'ms exceeded');
-      err.status = 408;
-      err.exposed = true;
-      err.timeout = timeout;
-      called = true;
-      done(err);
-    }, timeout);
-
-    fn.call(this, function () {
-      if (called)
-        return logger && logger.apply(ctx, arguments);
-
-      clearTimeout(id);
-      done.apply(ctx, arguments);
-    });
+    return await e(req, options);
   };
 }
 
 // returns a factory which turns an instance into an endpoint via a transport provider
 function generalFactory(method: any, transports: any, logger: any): any {
-  return function* makeEndpoints(instance: any): any {
+  return async function makeEndpoints(instance: any): Promise<any> {
     for (let i = 0; i < transports.length; i += 1) {
       try {
-        const endpoint = yield* transports[i].makeEndpoint(method, instance);
+        const endpoint = await (transports[i].makeEndpoint(method, instance));
         return endpoint;
       } catch (e) {
         logger.debug('generalFactory transport.makeEndpoint',
@@ -351,12 +296,12 @@ export class Client extends EventEmitter {
    *
    * @return {Object} Service with endpoint methods.
    */
-  * connect(): any {
+  async connect(): Promise<any> {
     const logger = this.logger;
     const transports = this.transports;
     const endpoints = this.endpoints;
     const middleware = this.middleware;
-    const s = yield co(function* createService(): any {
+    const s = await co(function createService(): any {
       const service = {};
       _.forIn(endpoints, (e, name) => {
         const factory = generalFactory(name, transports, logger);

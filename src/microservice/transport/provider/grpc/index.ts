@@ -1,12 +1,10 @@
-'use strict';
-
-import * as path from "path";
-import * as url from "url";
-import * as grpc from "grpc";
-import * as co from "co";
-import * as fs from "fs";
-import * as _ from "lodash";
-const errors = require('../../../errors');
+import * as path from 'path';
+import * as url from 'url';
+import * as grpc from 'grpc';
+import * as co from 'co';
+import * as fs from 'fs';
+import * as _ from 'lodash';
+import * as errors from '../../../errors';
 
 /**
  * Name of the transport
@@ -39,7 +37,7 @@ const errorMap = new Map([
  * @param  {Object} conn   A gRPC Client.
  * @param  {string} method The endpoint method name of the service.
  * @param  {object} stream Settings for request,response or bi directional stream.
- * @return {object|generator}        Returns a generator for normal RPC.
+ * @return {object|Promise} Returns a Promise for normal RPC.
  * Returns an object for streaming RPC.
  */
 function wrapClientEndpoint(client: Object, methodName: string,
@@ -87,12 +85,10 @@ function makeBiDirectionalStreamClientEndpoint(client: any,
     });
     return {
       async write(request: any, context: any): Promise<any> {
-        // TODO context to options
         call.write(request);
       },
-      * read(): any {
-        // TODO has options?
-        return yield function r(cb: any): any {
+      async read(): Promise<any> {
+        return await function r(cb: any): any {
           if (responses.length) {
             cb(null, responses.shift());
           } else if (end) {
@@ -136,11 +132,10 @@ function makeRequestStreamClientEndpoint(client: any, methodName: any): any {
     });
     return {
       async write(request: any, context: any): Promise<any> {
-        // TODO context to options
         call.write(request);
       },
-      * end(): any {
-        return yield function r(cb: any): any {
+      async end(): Promise<any> {
+        return await function r(cb: any): any {
           call.end();
           if (responses.length) {
             cb(null, responses.shift());
@@ -161,7 +156,7 @@ function makeResponseStreamClientEndpoint(client: any, methodName: any): any {
     const responses = [];
     const fns = [];
     let end = false;
-    const req = request || {};
+    let req = request || {};
     const call = client[methodName](req);
     call.on('data', (response) => {
       if (fns.length) {
@@ -177,8 +172,8 @@ function makeResponseStreamClientEndpoint(client: any, methodName: any): any {
       }
     });
     return {
-      * read(): any {
-        return yield function r(cb: any): any {
+      async read(): Promise<any> {
+        return await (function r(cb: any): any {
           if (responses.length) {
             cb(null, responses.shift());
           } else if (end) {
@@ -186,41 +181,48 @@ function makeResponseStreamClientEndpoint(client: any, methodName: any): any {
           } else {
             fns.push(cb);
           }
-        };
+        });
       },
     };
   };
 }
 
 function makeNormalClientEndpoint(client: any, methodName: any): any {
-  return function* normalClientEndpoint(request: any, context: any):
-    any {
+  return async function normalClientEndpoint(request: any, context: any):
+    Promise<any> {
     const options: any = {};
     if (_.has(context, 'timeout')) {
       options.deadline = Date.now() + context.timeout;
     }
     const req = request || {};
-    function callEndpointWrapper(): any {
-      return function callEndpoint(callback: any): any {
-        try {
-          client[methodName](req, options, callback);
-        } catch (err) {
-          // TODO Decide on how to handle endpoint connection disruptions
-          if (err.message === 'Call cannot be created from a closed channel') {
-            err.code = grpc.status.UNAVAILABLE;
+    function callEndpoint(): any {
+      return new Promise( (resolve, reject) => {
+          try {
+            client[methodName](req, options, (err, result) => {
+              if (err) return reject(err);
+              resolve(result);
+            });
+          } catch (err) {
+            if (err.message === 'Call cannot be created from a closed channel') {
+              err.code = grpc.status.UNAVAILABLE;
+            }
+            reject(err);
           }
-          callback(err);
-        }
-      };
+      });
     }
+
     try {
-      const result = yield callEndpointWrapper();
+      const result = await callEndpoint();
       const response = {
         error: null,
         data: result,
       };
       return response;
-    } catch (err) {
+    }
+    catch (err) {
+      if (err.message === 'Call cannot be created from a closed channel') {
+        err.code = grpc.status.UNAVAILABLE;
+      }
       if (err.code) {
         const Err = errorMap.get(err.code);
         if (Err) {
@@ -311,9 +313,9 @@ export class Client {
    * Create endpoint from instance and method name.
    * @param {string} methodName Name of the business logic service method.
    * @param {string} instance URL starting with schema "grpc:"
-   * @return {generator} Returns the endpoint.
+   * @return {Promise} Returns a Promise for the endpoint.
    */
-  * makeEndpoint(method: string, instance: string): any {
+  makeEndpoint(method: string, instance: string): any {
     const u = url.parse(instance, true, true);
     if (u.protocol !== 'grpc:') {
       throw new Error('not a grpc instance URL');
@@ -332,17 +334,19 @@ export class Client {
     if (this.config.timeout) {
       const deadline = Date.now() + this.config.timeout;
       const wait = function waitWrapper(): any {
-        return function waitForClientReady(callback: any): any {
-          grpc.waitForClientReady(conn, deadline, (err) => {
-            if (err) {
-              const chan = grpc.getClientChannel(conn);
-              chan.close();
-            }
-            callback(err);
-          });
-        };
+        return (() => {
+          return (callback: any): any => {
+            grpc.waitForClientReady(conn, deadline, (err) => {
+              if (err) {
+                const chan = grpc.getClientChannel(conn);
+                chan.close();
+              }
+              callback(err);
+            });
+          };
+        });
       };
-      yield wait();
+      wait();
     }
     const methods = this.service.service;
     const methodDef = _.find(methods, (m) => {
@@ -412,6 +416,7 @@ export class Client {
     });
     return struct;
   }
+
   /**
    * Close the connection to the server.
    */

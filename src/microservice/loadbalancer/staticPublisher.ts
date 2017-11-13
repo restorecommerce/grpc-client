@@ -1,21 +1,17 @@
-'use strict';
-
-/*  eslint-disable require-yield */
-
-import * as co from "co";
-const fixedPublisher = require('./fixedPublisher').fixedPublisher;
+import * as co from 'co';
+import { fixedPublisher } from './fixedPublisher';
 
 /**
  * StaticPublisher yields a set of static endpoints as produced by the passed factory.
  *
  * @param  {Array.<string>} instances Typically host:port strings
  * which the factory converts into endpoints.
- * @param  {generator} factory   Converts instance strings into endpoints.
+ * @param  factory   Converts instance strings into endpoints.
  * @param  {Object} logger
  */
-export async function staticPublisher(instances: string[], factory: any,
+async function staticPublisher(instances: string[], factory: any,
                             logger: any): Promise<any> {
-  const endpoints = co(function* send(): any {
+  const endpoints = co(async function send(): Promise<any> {
     const epoints = [];
     for (let i = 0; i < instances.length; i += 1) {
       const instance = instances[i];
@@ -31,9 +27,12 @@ export async function staticPublisher(instances: string[], factory: any,
     }
     logger.debug(`staticPublisher provides ${epoints.length} endpoint(s)
       from ${instances.length} instance(s)`, instances);
-    return yield epoints;
+    // epoints refers to the factory method i.e. generalFactory in client.ts
+    return await epoints;
   }).catch((err) => {
     throw err;
   });
-  await co(fixedPublisher(endpoints));
+  return await fixedPublisher(endpoints);
 }
+
+export { staticPublisher as staticPublisher };
