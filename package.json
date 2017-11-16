@@ -19,7 +19,7 @@
   "dependencies": {
     "@restorecommerce/logger": "^0.1.0",
     "co": "^4.6.0",
-    "grpc": "^1.4.1",
+    "grpc": "1.4.1",
     "lodash": "^4.16.4",
     "random-js": "^1.0.8"
   },
