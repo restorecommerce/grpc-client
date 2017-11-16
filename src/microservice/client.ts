@@ -159,6 +159,46 @@ function generalFactory(method: any, transports: any, logger: any): any {
   };
 }
 
+export function toStruct(obj, fromArray = false) {
+  let struct;
+  // fromArray flag is true when iterating
+  // objects inside a JSON array
+  if (!fromArray) {
+    struct = {
+      fields: {},
+    };
+  }
+  else {
+    struct = {
+      struct_value: { fields: {} },
+    };
+    struct.struct_value.fields = {};
+  }
+
+  const that = this;
+  _.forEach(obj, (value, key) => {
+    let innerStruct;
+    if (!fromArray) {
+      innerStruct = struct.fields;
+    } else {
+      innerStruct = struct.struct_value.fields;
+    }
+
+    if (_.isNumber(value)) {
+      innerStruct[key] = { number_value: value };
+    } else if (_.isString(value)) {
+      innerStruct[key] = { string_value: value };
+    } else if (_.isBoolean(value)) {
+      innerStruct[key] = { bool_value: value };
+    } else if (_.isArray(value)) {
+      innerStruct[key] = { list_value: { values: _.map(value, (v) => { return that.toStruct(v, true); }) } };
+    } else if (_.isObject(value)) {
+      innerStruct[key] = { struct_value: that.toStruct(value) };
+    }
+  });
+  return struct;
+}
+
 /**
  * Microservice client.
  * @class
@@ -314,46 +354,6 @@ export class Client extends EventEmitter {
     });
     this.emit('connected', s);
     return s;
-  }
-
-  toStruct(obj, fromArray = false) {
-    let struct;
-    // fromArray flag is true when iterating
-    // objects inside a JSON array
-    if (!fromArray) {
-      struct = {
-        fields: {},
-      };
-    }
-    else {
-      struct = {
-        struct_value: { fields: {} },
-      };
-      struct.struct_value.fields = {};
-    }
-
-    const that = this;
-    _.forEach(obj, (value, key) => {
-      let innerStruct;
-      if (!fromArray) {
-        innerStruct = struct.fields;
-      } else {
-        innerStruct = struct.struct_value.fields;
-      }
-
-      if (_.isNumber(value)) {
-        innerStruct[key] = { number_value: value };
-      } else if (_.isString(value)) {
-        innerStruct[key] = { string_value: value };
-      } else if (_.isBoolean(value)) {
-        innerStruct[key] = { bool_value: value };
-      } else if (_.isArray(value)) {
-        innerStruct[key] = { list_value: { values: _.map(value, (v) => { return that.toStruct(v, true); }) } };
-      } else if (_.isObject(value)) {
-        innerStruct[key] = { struct_value: that.toStruct(value) };
-      }
-    });
-    return struct;
   }
 
   /**
