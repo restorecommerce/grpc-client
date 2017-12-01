@@ -12,7 +12,7 @@ The Client request traverses middleware before calling the endpoint. The middlew
 ## Retry
 
 Failing endpoints retry calling with retry mechanism.
-For the retry logic we use [async-retry](https://github.com/zeit/async-retry).
+For the retry logic [async-retry](https://github.com/zeit/async-retry) is being used.
 See test case for more details.
 
 ## Timeout
