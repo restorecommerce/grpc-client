@@ -38,7 +38,7 @@
     "lint": "tslint './src/**/*.ts'",
     "tsctests": "tsc test/*.ts --module commonjs -target ES6",
     "test": "npm run mocha",
-    "mocha": "mocha ./test/loadBalancer_test.js",
+    "mocha": "mocha ./test/*_test.js",
     "postinstall": "tsc -d && npm run tsctests && npm run lint"
   },
   "engines": {
