@@ -42,6 +42,6 @@ A transport communicates between a server and a client. It handles encoding/deco
 - gRPC (Client-Server)
 - pipe (in-process communication, designed for testing)
 
-### Usage
+## Usage
 
 WIP See [tests](./test/)
