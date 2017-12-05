@@ -26,14 +26,20 @@
   },
   "devDependencies": {
     "@types/long": "^3.0.31",
+    "@types/mocha": "^2.2.43",
     "@types/node": "^7.0.22",
-    "tslint": "^5.3.2",
+    "@types/should": "^11.2.0",
+    "mocha": "^4.0.1",
+    "should": "^13.1.3",
     "typescript": "^2.3.3",
     "typescript-require": "^0.2.9"
   },
   "scripts": {
     "lint": "tslint './src/**/*.ts'",
-    "postinstall": "tsc -d && npm run lint"
+    "tsctests": "tsc test/*.ts --module commonjs -target ES6",
+    "test": "npm run mocha",
+    "mocha": "mocha ./test/loadBalancer_test.js",
+    "postinstall": "tsc -d && npm run tsctests && npm run lint"
   },
   "engines": {
     "node": ">= 8.7.0"
