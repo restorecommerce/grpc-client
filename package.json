@@ -36,10 +36,11 @@
   },
   "scripts": {
     "lint": "tslint './src/**/*.ts'",
+    "pretest": "npm run tsctests",
     "tsctests": "tsc test/*.ts --module commonjs -target ES6",
     "test": "npm run mocha",
     "mocha": "mocha ./test/*_test.js",
-    "postinstall": "tsc -d && npm run tsctests && npm run lint"
+    "postinstall": "tsc -d && npm run lint"
   },
   "engines": {
     "node": ">= 8.7.0"
