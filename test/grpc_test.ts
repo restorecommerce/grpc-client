@@ -58,7 +58,7 @@ const loggerConfig = {
 const PROTO_PATH = './protos/helloworld/hello_world.proto';
 const hello_proto = grpc.load(PROTO_PATH).helloworld;
 const logger = new Logger(loggerConfig.logger);
-let server;
+
 /**
  * Implementation of sayHello RPC method.
  */
@@ -68,6 +68,9 @@ function sayHello(call, callback) {
 }
 
 describe('grpc-client test', () => {
+  let server;
+  let client;
+  let helloService;
   before(async function startServer() {
     server = new grpc.Server();
     server.addService(hello_proto.Greeter.service, { sayHello: sayHello });
@@ -88,10 +91,22 @@ describe('grpc-client test', () => {
     should.exist(grpcConfig.loadbalancer);
     should.exist(grpcConfig.publisher);
     should.exist(grpcConfig.endpoints);
-    let client = new Client(grpcConfig, logger);
-    const helloService = await client.connect();
+    client = new Client(grpcConfig, logger);
+    helloService = await client.connect();
     let result = await helloService.sayHello({ name: 'test' });
     result.data.message.should.be.equal('Hello test');
+  });
+  it('request should timeout', async function checkEndpoint() {
+    let result = await helloService.sayHello({
+      name: 'test'
+    },
+      {
+        // timeout in milliseconds
+        timeout: 1,
+        retry: 2
+      });
+    should.exist(result.error);
+    result.error.message.should.be.equal('deadline exceeded');
     await client.end();
   });
 });
