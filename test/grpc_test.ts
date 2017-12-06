@@ -73,14 +73,14 @@ describe('grpc-client test', () => {
   let helloService;
   before(async function startServer() {
     server = new grpc.Server();
-    server.addService(hello_proto.Greeter.service, { sayHello: sayHello });
+    server.addService(hello_proto.Greeter.service, { sayHello });
     server.bind('localhost:50051', grpc.ServerCredentials.createInsecure());
     server.start();
   });
   after(function stopServer() {
     server.tryShutdown((err, res) => {
       if (err) {
-        throw new Error('Error while shutting down the server :' + err)
+        throw new Error('Error while shutting down the server :' + err);
       }
     });
   });

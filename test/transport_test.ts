@@ -61,7 +61,7 @@ providers.forEach((provider) => {
         });
       describe('binding a service', () => {
         it('should result in a wrapped service', function bindService() {
-          server.addService(test_proto.Test.service, { test: test });
+          server.addService(test_proto.Test.service, { test });
           server.bind('localhost:50051', grpc.ServerCredentials.createInsecure());
         });
       });
@@ -74,7 +74,7 @@ providers.forEach((provider) => {
         it('should stop the server', async function stopServer() {
           server.tryShutdown((err, res) => {
             if (err) {
-              throw new Error('Error while shutting down the server :' + err)
+              throw new Error('Error while shutting down the server :' + err);
             }
           });
         });
@@ -129,14 +129,14 @@ providers.forEach((provider) => {
           let server;
           before(function startServer() {
             server = new grpc.Server();
-            server.addService(test_proto.Test.service, { test: test });
+            server.addService(test_proto.Test.service, { test });
             server.bind('localhost:50051', grpc.ServerCredentials.createInsecure());
             server.start();
           });
           after(function stopServer() {
             server.tryShutdown((err, res) => {
               if (err) {
-                throw new Error('Error while shutting down the server :' + err)
+                throw new Error('Error while shutting down the server :' + err);
               }
             });
           });

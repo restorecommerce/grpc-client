@@ -35,12 +35,12 @@
     "typescript-require": "^0.2.9"
   },
   "scripts": {
-    "lint": "tslint './src/**/*.ts'",
+    "lint": "tslint './src/**/*.ts' './test/*.ts'",
     "pretest": "npm run tsctests",
     "tsctests": "tsc test/*.ts --module commonjs -target ES6",
-    "test": "npm run mocha",
+    "test": "npm run lint && npm run mocha",
     "mocha": "mocha ./test/*_test.js",
-    "postinstall": "tsc -d && npm run lint"
+    "postinstall": "tsc -d"
   },
   "engines": {
     "node": ">= 8.7.0"
