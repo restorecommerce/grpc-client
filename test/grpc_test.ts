@@ -60,7 +60,7 @@ const hello_proto = grpc.load(PROTO_PATH).helloworld;
 const logger = new Logger(loggerConfig.logger);
 let server;
 /**
- * Implements the sayHello RPC method.
+ * Implementation of sayHello RPC method.
  */
 function sayHello(call, callback) {
   // send response via callback from RPC
@@ -79,7 +79,7 @@ describe('grpc-client test', () => {
       if (err) {
         throw new Error('Error while shutting down the server :' + err)
       }
-    })
+    });
   });
   it('should connect to server and return response', async function checkEndpoint() {
     const grpcConfig = grpcClientCfg.client.test;
