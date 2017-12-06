@@ -13,11 +13,11 @@ The Client request traverses middleware before calling the endpoint. The middlew
 
 Failing endpoints retry calling with retry mechanism.
 For the retry logic [async-retry](https://github.com/zeit/async-retry) is being used.
-See test case for more details.
+See [test](./test/grpc_test.ts) for more details.
 
 ### Timeout
 
-It is possible to add a timeout to an endpoint call. The timeout number is in milliseconds. See test case for more details.
+It is possible to add a timeout to an endpoint call. The timeout number is in milliseconds. See [test](./test/grpc_test.ts) for more details.
 
 ### Publisher
 
