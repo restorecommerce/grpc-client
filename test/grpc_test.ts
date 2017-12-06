@@ -103,6 +103,7 @@ describe('grpc-client test', () => {
       {
         // timeout in milliseconds
         timeout: 1,
+        // number of retry attempts
         retry: 2
       });
     should.exist(result.error);
