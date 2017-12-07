@@ -39,6 +39,7 @@
     "pretest": "npm run tsctests",
     "tsctests": "tsc test/*.ts --module commonjs -target ES6",
     "test": "npm run lint && npm run mocha",
+    "test-debug": "mocha ./test/*_test.js --inspect-brk",
     "mocha": "mocha ./test/*_test.js",
     "postinstall": "tsc -d"
   },
