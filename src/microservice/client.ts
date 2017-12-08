@@ -215,7 +215,7 @@ export class Client extends EventEmitter {
  * @constructor
  * @param {Object} name Name of the configured client.
  */
-  constructor(config?: any, logger?: any) {
+  constructor(config: any, logger?: any) {
     super();
     if (_.isNil(config)) {
       throw new Error('missing config argument');
