@@ -10,7 +10,7 @@ import { fixedPublisher } from './fixedPublisher';
  * @param  {Object} logger
  */
 async function staticPublisher(instances: string[], factory: any,
-                            logger: any): Promise<any> {
+  logger: any): Promise<any> {
   const endpoints = co(async function send(): Promise<any> {
     const epoints = [];
     for (let i = 0; i < instances.length; i += 1) {
