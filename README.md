@@ -7,7 +7,7 @@
 [depend]: https://img.shields.io/david/restorecommerce/grpc-client.svg?style=flat-square
 [cover]: http://img.shields.io/coveralls/restorecommerce/grpc-client/master.svg?style=flat-square
 
-A Node.js client for gRPC based on [grpc](https://github.com/grpc/grpc) written in [Typescript] (https://github.com/Microsoft/TypeScript).
+A Node.js client for gRPC based on [grpc](https://github.com/grpc/grpc) written in [Typescript](https://github.com/Microsoft/TypeScript).
 It uses [Protocol Buffers](https://developers.google.com/protocol-buffers)
 to describe both the service interface and the structure of the payload messages in order to expose service functions as RPC endpoints to any Node.js application.
 Failing endpoints are handled using a retry mechanism (see [async-retry](https://github.com/zeit/async-retry)).
