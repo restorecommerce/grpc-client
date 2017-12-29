@@ -70,7 +70,7 @@ providers.forEach((provider) => {
           server.start();
         });
       });
-      describe('end', () => {
+      describe('stop', () => {
         it('should stop the server', async function stopServer() {
           server.tryShutdown((err, res) => {
             if (err) {

@@ -86,10 +86,10 @@ tests.forEach((test) => {
       async () => {
         const publisher = loadbalancer.fixedPublisher(endpoints);
         const lb = test.loadBalancer(publisher);
-        it('should return endpoint promise', () => {
+        it('should return endpoint', () => {
           should.exist(lb);
         });
-        it('should return promise value on await',
+        it('should return endpoint value on await',
           async function () {
             const e = await lb;
             should.exist(e);
@@ -99,10 +99,10 @@ tests.forEach((test) => {
     describe('with fixedPublisher and one endpoint, calling await', () => {
       const publisher = loadbalancer.fixedPublisher(oneEndpoints);
       const lb = test.loadBalancer(publisher);
-      it('should return endpoint promise', () => {
+      it('should return endpoint', () => {
         should.exist(lb);
       });
-      it('should return promise value on await',
+      it('should return endpoint value on await',
         async function () {
           const e = await lb;
           should.exist(e);

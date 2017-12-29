@@ -1,6 +1,5 @@
 # grpc-client
-
-[![Version npm][version]](http://browsenpm.org/package/@restorecommerce/grpc-client)[![Build Status][build]](https://travis-ci.org/restorecommerce/grpc-client?branch=master)[![Dependencies][depend]](https://david-dm.org/restorecommerce/grpc-client)[![Coverage Status][cover]](https://coveralls.io/r/restorecommerce/grpc-client?branch=master)
+<img src="http://img.shields.io/npm/v/%40restorecommerce%2Fkafka%2Dclient.svg?style=flat-square" alt="">[![Build Status][build]](https://travis-ci.org/restorecommerce/grpc-client?branch=master)[![Dependencies][depend]](https://david-dm.org/restorecommerce/grpc-client)[![Coverage Status][cover]](https://coveralls.io/github/restorecommerce/grpc-client?branch=master)
 
 [version]: http://img.shields.io/npm/v/grpc-client.svg?style=flat-square
 [build]: http://img.shields.io/travis/restorecommerce/grpc-client/master.svg?style=flat-square

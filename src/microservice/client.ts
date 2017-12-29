@@ -37,7 +37,12 @@ export function registerPublisher(name: string, provider: any): void {
   publishers[name] = provider;
 }
 
-// register default publishers
+/**
+ * register default publishers
+ * @param config
+ * @param factory
+ * @param logger
+ */
 function makeStaticPublisher(config: any, factory: any, logger: any): any {
   return loadBalancerLib.staticPublisher(config.instances, factory, logger);
 }
@@ -69,7 +74,14 @@ async function getEndpoint(loadBalancer: any): Promise<any> {
   return lbValue;
 }
 
-// handles retries, timeout, middleware, calling the loadBalancer and errors
+/**
+ * handles retries, timeout, middleware, calling the loadBalancer
+ * and error handling
+ * @param name
+ * @param middleware
+ * @param loadBalancer
+ * @param logger
+ */
 function makeServiceEndpoint(name: string, middleware: any,
   loadBalancer: any, logger: any): any {
   const e = async function handleRetryAndMiddleware(request: any,
@@ -143,7 +155,12 @@ function makeServiceEndpoint(name: string, middleware: any,
   };
 }
 
-// returns a factory which turns an instance into an endpoint via a transport provider
+/**
+ * returns a factory which turns an instance into an endpoint via a transport provider
+ * @param method
+ * @param transports
+ * @param logger
+ */
 function generalFactory(method: any, transports: any, logger: any): any {
   return async function makeEndpoints(instance: any): Promise<any> {
     for (let i = 0; i < transports.length; i += 1) {

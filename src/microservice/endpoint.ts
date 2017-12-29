@@ -1,6 +1,9 @@
 'use strict';
 
-// calls each middleware
+/**
+ * calls each middleware
+ * @param middleware
+ */
 export function chain(middleware: any): any {
   return async function generator(next: any): Promise<any> {
     let n = next;
