@@ -8,33 +8,33 @@ const grpcClientCfg = {
     test: {
       transports: {
         grpc: {
-          service: "helloworld.Greeter",
+          service: 'helloworld.Greeter',
           protos: [
-            "helloworld/hello_world.proto"
+            'helloworld/hello_world.proto'
           ],
-          protoRoot: "protos/",
+          protoRoot: 'protos/',
           timeout: 3000
         }
       },
       loadbalancer: {
-        name: "roundRobin"
+        name: 'roundRobin'
       },
       publisher: {
-        name: "static",
+        name: 'static',
         instances: [
-          "grpc://localhost:50051"
+          'grpc://localhost:50051'
         ]
       },
       endpoints: {
         sayHello: {
           loadbalancer: {
-            name: "random",
+            name: 'random',
             seed: 0
           },
           publisher: {
-            name: "static",
+            name: 'static',
             instances: [
-              "grpc://localhost:50051"
+              'grpc://localhost:50051'
             ]
           }
         }
@@ -47,7 +47,7 @@ const loggerConfig = {
   logger: {
     console: {
       handleExceptions: false,
-      level: "info",
+      level: 'info',
       colorize: true,
       prettyPrint: true
     }

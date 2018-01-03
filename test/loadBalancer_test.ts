@@ -8,7 +8,7 @@ const loggerConfig = {
   logger: {
     console: {
       handleExceptions: false,
-      level: "info",
+      level: 'info',
       colorize: true,
       prettyPrint: true
     }
