@@ -236,15 +236,6 @@ function makeNormalClientEndpoint(client: any, methodName: any): any {
   };
 }
 
-
-function setGRPCLogger(logger: any): any {
-  // gRPC logger
-  const grpcLogger = {
-    error: logger.debug,
-  };
-  grpc.setLogger(console);
-}
-
 /**
  * Client is a gRPC transport provider for calling endpoints.
  *
@@ -273,8 +264,7 @@ export class Client {
     this.config = config;
     this.logger = logger;
 
-    // gRPC logger
-    setGRPCLogger(logger);
+    grpc.setLogger(console);
 
     // check config
     if (!_.has(config, 'service')) {
