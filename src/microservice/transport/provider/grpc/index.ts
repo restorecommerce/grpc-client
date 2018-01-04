@@ -242,7 +242,7 @@ function setGRPCLogger(logger: any): any {
   const grpcLogger = {
     error: logger.debug,
   };
-  grpc.setLogger(grpcLogger);
+  grpc.setLogger(console);
 }
 
 /**

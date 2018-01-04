@@ -4,6 +4,7 @@ import * as Logger from '@restorecommerce/logger';
 import { Client as grpcClient } from '../lib/microservice/transport/provider/grpc';
 import * as grpc from 'grpc';
 import * as should from 'should';
+import * as sleep from 'sleep';
 
 /* global describe it before after*/
 
@@ -46,7 +47,7 @@ function test(call, callback) {
   callback(null, {
     result: 'welcome',
   });
-};
+}
 
 providers.forEach((provider) => {
   describe(`transport provider ${provider.name}`, () => {
@@ -132,6 +133,7 @@ providers.forEach((provider) => {
             server.addService(test_proto.Test.service, { test });
             server.bind('localhost:50051', grpc.ServerCredentials.createInsecure());
             server.start();
+            sleep.sleep(1);
           });
           after(function stopServer() {
             server.tryShutdown((err, res) => {
@@ -144,12 +146,11 @@ providers.forEach((provider) => {
             endpoint = client.makeEndpoint(methodName, instance);
             should.exist(endpoint);
           });
-          it('should succeed when calling with empty context',
-            async function checkWithEmptyContext() {
-              const result = await endpoint(request, {});
-              should.ifError(result.error);
-              should.deepEqual(response, result.data);
-            });
+          it('should succeed when calling with empty context', async function checkWithEmptyContext() {
+            const result = await endpoint(request);
+            should.ifError(result.error);
+            should.deepEqual(response, result.data);
+          });
           it('should succeed when calling without context', async function checkWithoutContext() {
             const result = await endpoint(request);
             should.ifError(result.error);

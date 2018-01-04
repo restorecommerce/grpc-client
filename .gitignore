@@ -6,5 +6,8 @@ npm-debug.log
 .directory
 .vscode
 
+*.js
+lib/
+test/*.js
 *.log
 *~

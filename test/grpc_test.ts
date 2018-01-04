@@ -102,7 +102,7 @@ describe('grpc-client test', () => {
     },
       {
         // timeout in milliseconds
-        timeout: 1,
+        timeout: 0.1,
         // number of retry attempts
         retry: 2
       });
