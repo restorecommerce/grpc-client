@@ -44,7 +44,7 @@
     "tsctests": "tsc test/*.ts --module commonjs -target ES6",
     "test": "npm run lint && npm run mocha",
     "test-debug": "mocha -R spec ./test/*_test.js --inspect-brk --exit",
-    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec ./test/*.js --exit",
+    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec ./test/*_test.js --exit",
     "mocha": "mocha -R spec ./test/*_test.js --exit",
     "postinstall": "tsc -d"
   },

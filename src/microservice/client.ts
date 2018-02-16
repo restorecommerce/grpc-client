@@ -63,11 +63,7 @@ export function registerTransport(name: string, transport: any): void {
 
 // register default transport providers
 const grpc = require('./transport/provider/grpc');
-
 registerTransport(grpc.Name, grpc.Client);
-const pipe = require('./transport/provider/pipe');
-
-registerTransport(pipe.Name, pipe.Client);
 
 async function getEndpoint(loadBalancer: any): Promise<any> {
   const lbValue = await loadBalancer;

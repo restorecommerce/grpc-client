@@ -3,9 +3,6 @@ import * as grpc from 'grpc';
 import * as should from 'should';
 import * as Logger from '@restorecommerce/logger';
 import * as co from 'co';
-// import * as mocha from 'mocha';
-// import * as coMocha from 'co-mocha';
-// coMocha(mocha);
 
 const grpcClientCfg = {
   client: {
@@ -75,24 +72,6 @@ async function requestStream(call, callback) {
 }
 
 async function responseStream(call, callback) {
-  const requests = [];
-  const fns = [];
-  let end = false;
-  call.on('data', (req) => {
-    if (fns.length) {
-      fns.shift()(null, req);
-    } else {
-      requests.push(req);
-    }
-  });
-  call.on('end', () => {
-    end = true;
-    while (fns.length) {
-      fns.shift()(new Error('stream end'), null);
-    }
-    fns.push(callback);
-    callback(null, 'pong');
-  });
 }
 
 describe('grpc-streaming tests', () => {
