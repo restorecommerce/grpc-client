@@ -9,21 +9,21 @@ const grpcClientCfg = {
     stream: {
       transports: {
         grpc: {
-          service: "test.Stream",
+          service: 'test.Stream',
           protos: [
-            "test/test.proto"
+            'test/test.proto'
           ],
-          protoRoot: "protos/",
+          protoRoot: 'protos/',
           timeout: 3000
         }
       },
       loadbalancer: {
-        name: "roundRobin"
+        name: 'roundRobin'
       },
       publisher: {
-        name: "static",
+        name: 'static',
         instances: [
-          "grpc://localhost:50052"
+          'grpc://localhost:50052'
         ]
       },
       endpoints: {
