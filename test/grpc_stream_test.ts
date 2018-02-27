@@ -72,15 +72,20 @@ async function requestStream(call, callback) {
 }
 
 async function responseStream(call, callback) {
+  const response = 'pong';
+  for (let i = 0; i < 3; i++) {
+    call.write(response);
+  }
+  call.end();
 }
 
 describe('grpc-streaming tests', () => {
   let server;
-  let client;
-  let helloService;
+  const grpcConfig = grpcClientCfg.client.stream.transports.grpc;
+  const client = new Client(grpcConfig, logger);
+  const instance = grpcClientCfg.client.stream.publisher.instances[0];
   before(async function startServer() {
     server = new grpc.Server();
-    // server.addService(hello_proto.Greeter.service, { sayHello });
     server.addService(stream_proto.Stream.service, { requestStream, responseStream });
     server.bind('localhost:50052', grpc.ServerCredentials.createInsecure());
     server.start();
@@ -92,24 +97,38 @@ describe('grpc-streaming tests', () => {
       }
     });
   });
-  it('should connect to server and return response for streaming request', async function checkEndpoint() {
-    const grpcConfig = grpcClientCfg.client.stream.transports.grpc;
-    const client = new Client(grpcConfig, logger);
-    const instance = grpcClientCfg.client.stream.publisher.instances[0];
-    const requestStream = client.makeEndpoint('requestStream', instance);
-    let call = await requestStream();
-
-    for (let i = 0; i < 3; i += 1) {
-      await call.write({ value: 'ping' });
-    }
-    let response = await co(call.end((err, data) => { }));
-
-    const data = await new Promise((resolve, reject) => {
-      response((err, data) => {
-        resolve(data);
-        should.exist(data.result);
-        data.result.should.equal('pong');
+  it('should connect to server and return a response for streaming request',
+    async function checkEndpoint() {
+      const requestStream = client.makeEndpoint('requestStream', instance);
+      let call = await requestStream();
+      for (let i = 0; i < 3; i += 1) {
+        await call.write({ value: 'ping' });
+      }
+      let response = await co(call.end((err, data) => { }));
+      const data = await new Promise((resolve, reject) => {
+        response((err, data) => {
+          resolve(data);
+          should.exist(data.result);
+          data.result.should.equal('pong');
+        });
       });
     });
-  });
+
+  it('should connect to server and return streaming response for the request',
+    async function checkEndpoint() {
+      const responseStream = client.makeEndpoint('responseStream', instance);
+      let call = await responseStream({ value: 'ping' });
+      let streamingResponse = [];
+      for (let i = 0; i < 3; i++) {
+        // get the EP
+        streamingResponse[i] = await co(call.read((err, data) => { }));
+        const data = await new Promise((resolve, reject) => {
+          streamingResponse[i]((err, data) => {
+            resolve(data);
+            should.exist(data.result);
+            data.result.should.equal('pong');
+          });
+        });
+      }
+    });
 });
