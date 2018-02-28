@@ -14,8 +14,8 @@ The client's communication process is designed to support different types of mid
 
 ## Usage
 
-The Client requires a gRPC configuration and optionally a [winston](https://github.com/winstonjs/winston) compatible logger should be passed. For a simple example on how to use this client with a generic gRPC server check the [test cases](https://github.com/restorecommerce/grpc-client/tree/master/test). The `connect` method as well as all exposed RPC calls are async.
+A client instance requires a gRPC configuration and optionally a [winston](https://github.com/winstonjs/winston) compatible logger. For a simple example on how to use this client with a generic gRPC server check the [test cases](https://github.com/restorecommerce/grpc-client/tree/master/test). The `connect` method as well as all exposed RPC calls are async.
 
 ## Customization
 
-Although the main transport is gRPC, the client's configuration options are flexible enough to support other transports, which would have to be implemented extending the [Client](https://github.com/restorecommerce/grpc-client/blob/master/src/microservice/client.ts) class to handle that specific transport. The same is true for custom load balancers. Furthermore, service testing can be done without using gRPC/ Protocol Buffers, as `pipe` is supported as a transport for in-process communication.
+Although the main transport is gRPC, the client's configuration options are flexible enough to support other transports, which would have to be implemented extending the [Client](https://github.com/restorecommerce/grpc-client/blob/master/src/microservice/client.ts) class to handle that specific transport. The same is true for custom load balancers. 
