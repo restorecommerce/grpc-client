@@ -14,7 +14,7 @@ The client's communication process is designed to support different types of mid
 
 ## Usage
 
-A client instance requires a gRPC configuration and optionally a [winston](https://github.com/winstonjs/winston) compatible logger. For a simple example on how to use this client with a generic gRPC server check the [test cases](https://github.com/restorecommerce/grpc-client/tree/master/test). The `connect` method as well as all exposed RPC calls are async.
+A client instance requires a configuration object and optionally a [winston](https://github.com/winstonjs/winston) compatible logger. Configuration info should include transport-specific details (such as protobuf interfaces) and the names of the endpoints which it is aimed to connect to. For a simple example on how to use this client with a generic gRPC server check the [test cases](https://github.com/restorecommerce/grpc-client/tree/master/test). The `connect` method as well as all exposed RPC calls are async.
 
 ## Customization
 
