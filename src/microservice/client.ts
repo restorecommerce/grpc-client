@@ -92,7 +92,7 @@ function makeServiceEndpoint(name: string, middleware: any,
       attempts,
       currentAttempt: 1,
     });
-    logger.debug(`calling endpoint with request ${request}`);
+    logger.debug('calling endpoint with request:', request);
     const retry = require('async-retry');
     let i = 1;
     try {
