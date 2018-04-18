@@ -1,5 +1,3 @@
-'use strict';
-
 import * as loadbalancer from '../lib/microservice/loadbalancer';
 import * as Logger from '@restorecommerce/logger';
 import * as should from 'should';

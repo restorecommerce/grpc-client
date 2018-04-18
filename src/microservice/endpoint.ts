@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * calls each middleware
  * @param middleware

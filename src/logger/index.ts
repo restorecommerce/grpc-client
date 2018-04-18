@@ -1,7 +1,5 @@
-'use strict';
-
-import * as RestoreLogger from "@restorecommerce/logger";
 import * as _ from "lodash";
+import * as RestoreLogger from "@restorecommerce/logger";
 
 /**
  * Logger based on a customized winston logger.

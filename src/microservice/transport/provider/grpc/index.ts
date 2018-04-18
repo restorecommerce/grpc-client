@@ -11,7 +11,7 @@ import * as errors from '../../../errors';
  *
  * @const
  */
-const NAME = 'grpc';
+export const NAME = 'grpc';
 
 const errorMap = new Map([
   [grpc.status.CANCELLED, errors.Cancelled],
@@ -385,5 +385,3 @@ export class Client {
     }
   }
 }
-
-module.exports.Name = NAME;

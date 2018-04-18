@@ -3,7 +3,9 @@ import { chain as chainMiddleware } from './endpoint';
 import * as co from 'co';
 import * as _ from 'lodash';
 import { EventEmitter } from 'events';
-const Logger = require('../logger').Logger;
+import * as retry from 'async-retry';
+import { Logger } from '../logger';
+import * as grpc from './transport/provider/grpc';
 
 // loadbalancers
 const loadBalancers: any = {};
@@ -62,8 +64,7 @@ export function registerTransport(name: string, transport: any): void {
 }
 
 // register default transport providers
-const grpc = require('./transport/provider/grpc');
-registerTransport(grpc.Name, grpc.Client);
+registerTransport(grpc.NAME, grpc.Client);
 
 async function getEndpoint(loadBalancer: any): Promise<any> {
   const lbValue = await loadBalancer;
@@ -93,7 +94,6 @@ function makeServiceEndpoint(name: string, middleware: any,
       currentAttempt: 1,
     });
     logger.debug('calling endpoint with request:', request);
-    const retry = require('async-retry');
     let i = 1;
     try {
       return await retry(async () => {

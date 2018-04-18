@@ -1,4 +1,3 @@
-'use strict';
 import * as mocha from 'mocha';
 import * as Logger from '@restorecommerce/logger';
 import { Client as grpcClient } from '../lib/microservice/transport/provider/grpc';
