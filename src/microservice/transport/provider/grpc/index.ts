@@ -83,6 +83,18 @@ function makeBiDirectionalStreamClientEndpoint(client: any,
         fns.shift()(new Error('stream end'), null);
       }
     });
+    call.on('error', (err) => {
+      end = true;
+      if (err.details === 'Connect Failed') {
+        err.code = grpc.status.UNAVAILABLE;
+      }
+      if (err.code) {
+        const Err = errorMap.get(err.code);
+        const instance = new Err(err.details);
+        console.log('Modified err object is...', instance);
+        fns.shift()(instance, null);
+      }
+    });
     return {
       async write(request: any, context: any): Promise<any> {
         call.write(request);
@@ -130,6 +142,18 @@ function makeRequestStreamClientEndpoint(client: any, methodName: any): any {
         fns.shift()(new Error('stream end'), null);
       }
     });
+    call.on('error', (err) => {
+      end = true;
+      if (err.details === 'Connect Failed') {
+        err.code = grpc.status.UNAVAILABLE;
+      }
+      if (err.code) {
+        const Err = errorMap.get(err.code);
+        const instance = new Err(err.details);
+        console.log('Modified err object is...', instance);
+        fns.shift()(instance, null);
+      }
+    });
     return {
       async write(request: any, context: any): Promise<any> {
         call.write(request);
@@ -171,6 +195,18 @@ function makeResponseStreamClientEndpoint(client: any, methodName: any): any {
         fns.shift()(new Error('stream end'), null);
       }
     });
+    call.on('error', (err) => {
+      end = true;
+      if (err.details === 'Connect Failed') {
+        err.code = grpc.status.UNAVAILABLE;
+      }
+      if (err.code) {
+        const Err = errorMap.get(err.code);
+        const instance = new Err(err.details);
+        console.log('Modified err object is...', instance);
+        fns.shift()(instance, null);
+      }
+    });
     return {
       async read(): Promise<any> {
         return await (function r(cb: any): any {
@@ -196,18 +232,18 @@ function makeNormalClientEndpoint(client: any, methodName: any): any {
     }
     const req = request || {};
     function callEndpoint(): any {
-      return new Promise( (resolve, reject) => {
-          try {
-            client[methodName](req, options, (err, result) => {
-              if (err) return reject(err);
-              resolve(result);
-            });
-          } catch (err) {
-            if (err.message === 'Call cannot be created from a closed channel') {
-              err.code = grpc.status.UNAVAILABLE;
-            }
-            reject(err);
+      return new Promise((resolve, reject) => {
+        try {
+          client[methodName](req, options, (err, result) => {
+            if (err) return reject(err);
+            resolve(result);
+          });
+        } catch (err) {
+          if (err.message === 'Call cannot be created from a closed channel') {
+            err.code = grpc.status.UNAVAILABLE;
           }
+          reject(err);
+        }
       });
     }
 
