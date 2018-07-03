@@ -91,7 +91,6 @@ function makeBiDirectionalStreamClientEndpoint(client: any,
       if (err.code) {
         const Err = errorMap.get(err.code);
         const instance = new Err(err.details);
-        console.log('Modified err object is...', instance);
         fns.shift()(instance, null);
       }
     });
@@ -150,7 +149,6 @@ function makeRequestStreamClientEndpoint(client: any, methodName: any): any {
       if (err.code) {
         const Err = errorMap.get(err.code);
         const instance = new Err(err.details);
-        console.log('Modified err object is...', instance);
         fns.shift()(instance, null);
       }
     });
@@ -203,7 +201,6 @@ function makeResponseStreamClientEndpoint(client: any, methodName: any): any {
       if (err.code) {
         const Err = errorMap.get(err.code);
         const instance = new Err(err.details);
-        console.log('Modified err object is...', instance);
         fns.shift()(instance, null);
       }
     });
