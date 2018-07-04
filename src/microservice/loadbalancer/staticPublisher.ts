@@ -26,7 +26,7 @@ async function staticPublisher(instances: string[], factory: any,
       throw new Error('no endpoints');
     }
     logger.debug(`staticPublisher provides ${epoints.length} endpoint(s)
-      from ${instances.length} instance(s)`, instances);
+      from ${instances.length} instance(s)`, { instances });
     // epoints refers to the factory method i.e. generalFactory in client.ts
     return await epoints;
   }).catch((err) => {
