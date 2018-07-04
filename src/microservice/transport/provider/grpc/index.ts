@@ -313,7 +313,7 @@ export class Client {
     if (_.isNil(protos) || _.size(protos) === 0) {
       throw new Error('config value protos is not set');
     }
-    this.logger.verbose(`gRPC Client loading protobuf files from root ${protoRoot}`, protos);
+    this.logger.verbose(`gRPC Client loading protobuf files from root ${protoRoot}`, { protos });
 
     // There will be only one proto since a client can connect to only
     // one service at a time.

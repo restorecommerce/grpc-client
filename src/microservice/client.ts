@@ -165,7 +165,7 @@ function generalFactory(method: any, transports: any, logger: any): any {
         return endpoint;
       } catch (e) {
         logger.debug('generalFactory transport.makeEndpoint',
-          method, transports[i].name, instance, e);
+          { method, transport: transports[i].name, instance, endpoint: e });
       }
     }
     throw new Error('no endpoint');
