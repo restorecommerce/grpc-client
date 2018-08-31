@@ -47,7 +47,7 @@ const loggerConfig = {
   logger: {
     console: {
       handleExceptions: false,
-      level: 'info',
+      level: 'error',
       colorize: true,
       prettyPrint: true
     }
