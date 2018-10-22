@@ -320,7 +320,9 @@ export class Client {
     const proto = [];
     for (let i = 0; i < protos.length; i++) {
       const filePath = { root: protoRoot, file: protos[i] };
-      this.proto = grpc.load(filePath);
+      this.proto = grpc.load(filePath, 'proto', {
+        longsAsStrings: false
+      });
       proto[i] = this.proto;
     }
 
