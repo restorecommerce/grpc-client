@@ -12,10 +12,27 @@ to describe both the service interface and the structure of the payload messages
 Failing endpoints are handled using a retry mechanism (see [async-retry](https://github.com/zeit/async-retry)).
 The client's communication process is designed to support different types of middlewares and load balancing strategies. The supported load balancing strategies are `Random` and `RoundRobin`.
 
-## Usage
+## Development
+
+### Tests
 
 A client instance requires a configuration object and optionally a [winston](https://github.com/winstonjs/winston) compatible logger. Configuration info should include transport-specific details (such as protobuf interfaces) and the names of the endpoints which it is aimed to connect to. For a simple example on how to use this client with a generic gRPC server check the [test cases](https://github.com/restorecommerce/grpc-client/tree/master/test). The `connect` method as well as all exposed RPC calls are async.
 
 ## Customization
 
-Although the main transport is gRPC, the client's configuration options are flexible enough to support other transports, which would have to be implemented extending the [Client](https://github.com/restorecommerce/grpc-client/blob/master/src/microservice/client.ts) class to handle that specific transport. The same is true for custom load balancers. 
+Although the main transport is gRPC, the client's configuration options are flexible enough to support other transports, which would have to be implemented extending the [Client](https://github.com/restorecommerce/grpc-client/blob/master/src/microservice/client.ts) class to handle that specific transport. The same is true for custom load balancers.
+
+## Usage
+
+- Install dependencies
+
+```sh
+npm install
+```
+
+- Build
+
+```sh
+# compile the code
+npm run build
+```
