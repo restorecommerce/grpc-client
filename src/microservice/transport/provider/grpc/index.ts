@@ -5,6 +5,7 @@ import * as co from 'co';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as errors from '../../../errors';
+import * as rTracer from 'cls-rtracer';
 
 /**
  * Name of the transport
@@ -231,7 +232,12 @@ function makeNormalClientEndpoint(client: any, methodName: any): any {
     function callEndpoint(): any {
       return new Promise((resolve, reject) => {
         try {
-          client[methodName](req, options, (err, result) => {
+          let meta = new grpc.Metadata();
+          const rid = rTracer.id();
+          if (rid) {
+            meta.add('rid', require('cls-rtracer').id());
+          }
+          client[methodName](req, meta, options, (err, result) => {
             if (err) return reject(err);
             resolve(result);
           });
