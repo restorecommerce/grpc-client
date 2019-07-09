@@ -47,7 +47,7 @@ const loggerConfig = {
 };
 
 const STREAM_PROTO_PATH = './protos/test/test.proto';
-const stream_proto = grpc.load(STREAM_PROTO_PATH).test;
+const stream_proto: any = grpc.load(STREAM_PROTO_PATH).test;
 const logger = new Logger(loggerConfig.logger);
 
 async function requestStream(call, callback) {

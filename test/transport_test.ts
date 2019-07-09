@@ -35,7 +35,7 @@ const loggerConfig = {
   }
 };
 const PROTO_PATH = './protos/test/test.proto';
-const test_proto = grpc.load(PROTO_PATH).test;
+const test_proto: any = grpc.load(PROTO_PATH).test;
 const logger = new Logger(loggerConfig.logger);
 
 /**
