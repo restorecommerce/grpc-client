@@ -235,7 +235,7 @@ function makeNormalClientEndpoint(client: any, methodName: any): any {
           let meta = new grpc.Metadata();
           const rid = rTracer.id();
           if (rid) {
-            meta.add('rid', require('cls-rtracer').id());
+            meta.add('rid', rid);
           }
           client[methodName](req, meta, options, (err, result) => {
             if (err) return reject(err);

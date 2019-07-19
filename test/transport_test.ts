@@ -1,5 +1,5 @@
 import * as mocha from 'mocha';
-import * as Logger from '@restorecommerce/logger';
+import { Logger } from '@restorecommerce/logger';
 import { Client as grpcClient } from '../lib/microservice/transport/provider/grpc';
 import * as grpc from 'grpc';
 import * as should from 'should';
@@ -24,7 +24,7 @@ const providers = [{
 }
 ];
 
-const loggerConfig = {
+const loggerConfig: any = {
   logger: {
     console: {
       handleExceptions: false,

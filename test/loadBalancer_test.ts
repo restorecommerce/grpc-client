@@ -1,8 +1,8 @@
 import * as loadbalancer from '../lib/microservice/loadbalancer';
-import * as Logger from '@restorecommerce/logger';
+import { Logger } from '@restorecommerce/logger';
 import * as should from 'should';
 
-const loggerConfig = {
+const loggerConfig: any = {
   logger: {
     console: {
       handleExceptions: false,
@@ -118,11 +118,11 @@ tests.forEach((test) => {
       });
       it('should throw an error after calling it again',
         async function checkGetEndpoint() {
-        const result = await lb.catch((error) => {
-          error.message.should.equal('publisher did not return endpoints');
+          const result = await lb.catch((error) => {
+            error.message.should.equal('publisher did not return endpoints');
+          });
+          should.not.exist(result);
         });
-        should.not.exist(result);
-      });
     });
   });
 });

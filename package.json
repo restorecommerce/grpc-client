@@ -17,7 +17,7 @@
   ],
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "@restorecommerce/logger": "^0.1.6",
+    "@restorecommerce/logger": "^0.1.7",
     "async-retry": "^1.2.3",
     "cls-hooked": "^4.2.2",
     "cls-rtracer": "^1.2.0",
@@ -44,7 +44,7 @@
   "scripts": {
     "lint": "tslint './src/**/*.ts' './test/*.ts'",
     "pretest": "npm run tsctests",
-    "tsctests": "tsc test/*.ts --module commonjs -target ES6",
+    "tsctests": "tsc -d",
     "test": "npm run lint && npm run mocha",
     "test-debug": "cross-env NODE_ENV=test; mocha -R spec ./test/*_test.js --inspect-brk --exit",
     "coveralls": "corss-env NODE_ENV=test; nyc --reporter text --reporter lcov npm test",

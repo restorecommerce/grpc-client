@@ -1,7 +1,7 @@
 import { Client } from './../lib/microservice/client';
 import * as grpc from 'grpc';
 import * as should from 'should';
-import * as Logger from '@restorecommerce/logger';
+import { Logger } from '@restorecommerce/logger';
 
 const grpcClientCfg = {
   client: {
@@ -43,7 +43,7 @@ const grpcClientCfg = {
   }
 };
 
-const loggerConfig = {
+const loggerConfig: any = {
   logger: {
     console: {
       handleExceptions: false,
