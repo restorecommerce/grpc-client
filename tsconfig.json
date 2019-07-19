@@ -6,13 +6,11 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "outDir": "lib",
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "alwaysStrict": true,
+    "outDir": "lib"
   },
   "include": [
-     "./src/**/*.ts", "./test/*.ts"
+     "./src/**/*.ts"
   ],
   "exclude": [
     "node_modules",

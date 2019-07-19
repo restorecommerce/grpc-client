@@ -44,7 +44,7 @@
   "scripts": {
     "lint": "tslint './src/**/*.ts' './test/*.ts'",
     "pretest": "npm run tsctests",
-    "tsctests": "tsc -d",
+    "tsctests": "tsc -d -p tsconfig.test.json",
     "test": "npm run lint && npm run mocha",
     "test-debug": "cross-env NODE_ENV=test; mocha -R spec ./test/*_test.js --inspect-brk --exit",
     "coveralls": "corss-env NODE_ENV=test; nyc --reporter text --reporter lcov npm test",
