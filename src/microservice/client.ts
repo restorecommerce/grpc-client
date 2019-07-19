@@ -14,11 +14,11 @@ export function registerLoadBalancer(name: string, provider: any): void {
   loadBalancers[name] = provider;
 }
 
-function makeRoundRobinLB(config: any, publisher: any, logger: any): any {
+function makeRoundRobinLB(config: any, publisher: any, logger: Logger): any {
   return loadBalancerLib.roundRobin(publisher, logger);
 }
 
-function makeRandomLB(config: any, publisher: any, logger: any): any {
+function makeRandomLB(config: any, publisher: any, logger: Logger): any {
   const seed = config.seed || Math.random();
   return loadBalancerLib.random(publisher, seed, logger);
 }
@@ -45,7 +45,7 @@ export function registerPublisher(name: string, provider: any): void {
  * @param factory
  * @param logger
  */
-function makeStaticPublisher(config: any, factory: any, logger: any): any {
+function makeStaticPublisher(config: any, factory: any, logger: Logger): any {
   return loadBalancerLib.staticPublisher(config.instances, factory, logger);
 }
 registerPublisher('static', makeStaticPublisher);
@@ -80,7 +80,7 @@ async function getEndpoint(loadBalancer: any): Promise<any> {
  * @param logger
  */
 function makeServiceEndpoint(name: string, middleware: any,
-  loadBalancer: any, logger: any): any {
+  loadBalancer: any, logger: Logger): any {
   const e = async function handleRetryAndMiddleware(request: any,
     options: any): Promise<any> {
     let attempts = 1;
@@ -157,7 +157,7 @@ function makeServiceEndpoint(name: string, middleware: any,
  * @param transports
  * @param logger
  */
-function generalFactory(method: any, transports: any, logger: any): any {
+function generalFactory(method: any, transports: any, logger: Logger): any {
   return async function makeEndpoints(instance: any): Promise<any> {
     for (let i = 0; i < transports.length; i += 1) {
       try {
@@ -178,7 +178,7 @@ function generalFactory(method: any, transports: any, logger: any): any {
  */
 export class Client extends EventEmitter {
   config: any;
-  logger: any;
+  logger: Logger;
   transports: any;
   endpoints: any;
   middleware: any;

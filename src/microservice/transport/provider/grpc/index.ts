@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as errors from '../../../errors';
 import * as rTracer from 'cls-rtracer';
+import { Logger } from '../../../../logger';
 
 /**
  * Name of the transport
@@ -287,7 +288,7 @@ export class Client {
 
   name: string;
   config: any;
-  logger: any;
+  logger: Logger;
   builder: any;
   proto: any;
   service: any;
@@ -298,7 +299,7 @@ export class Client {
    * @param {Logger} logger
    * @constructor
    */
-  constructor(config: any, logger: any) {
+  constructor(config: any, logger: Logger) {
     this.name = NAME;
     this.config = config;
     this.logger = logger;
