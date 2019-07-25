@@ -7,6 +7,10 @@ node_js:
     - "12.2.0"
 git:
   depth: 10
+before_install:
+  - sudo apt-get update
+  - 'npm install -g typescript'
+  - 'npm install -g tslint'
 after_success:
   - 'npm run coveralls'
   - 'cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js'
