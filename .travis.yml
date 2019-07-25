@@ -4,11 +4,9 @@ cache:
   directories:
     - node_modules
 node_js:
-    - "9.2.0"
+    - "12.2.0"
 git:
   depth: 10
-scripts:
-  - 'npm test'
 after_success:
-  - sleep 30
-  - npm run coveralls
+  - 'npm run coveralls'
+  - 'cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js'
