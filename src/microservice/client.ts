@@ -80,7 +80,7 @@ async function getEndpoint(loadBalancer: any): Promise<any> {
  * @param logger
  */
 function makeServiceEndpoint(name: string, middleware: any,
-  loadBalancer: any, logger: Logger): any {
+  loadBalancer: any, logger: Logger, cfg?: any): any {
   const e = async function handleRetryAndMiddleware(request: any,
     options: any): Promise<any> {
     let attempts = 1;
@@ -93,7 +93,17 @@ function makeServiceEndpoint(name: string, middleware: any,
       attempts,
       currentAttempt: 1,
     });
-    logger.debug('calling endpoint with request:', { request });
+    let cloned = Object.assign({}, request);
+    if (cfg && cfg.bufferFields) {
+      const keys = Object.keys(cfg.bufferFields);
+      for (let key of keys) {
+        const bufferField = cfg.bufferFields[key];
+        if (cloned[bufferField]) {
+          delete cloned[bufferField];
+        }
+      }
+    }
+    logger.debug('invoking endpoint with request:', { request: cloned });
     let i = 1;
     try {
       return await retry(async () => {
@@ -314,13 +324,14 @@ export class Client extends EventEmitter {
     const transports = this.transports;
     const endpoints = this.endpoints;
     const middleware = this.middleware;
+    const thiz = this;
     const s = await co(function createService(): any {
       const service = {};
       _.forIn(endpoints, (e, name) => {
         const factory = generalFactory(name, transports, logger);
         const publisher = e.publisher(e.publisherConfig, factory, logger);
         const loadBalancer = e.loadBalancer(e.loadBalancerConfig, publisher, logger);
-        service[name] = makeServiceEndpoint(name, middleware, loadBalancer, logger);
+        service[name] = makeServiceEndpoint(name, middleware, loadBalancer, logger, thiz.config);
       });
       logger.verbose('gRPC service ready', service);
       return service;

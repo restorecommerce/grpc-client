@@ -38,6 +38,9 @@ const grpcClientCfg = {
             ]
           }
         }
+      },
+      bufferFields: {
+        HelloRequest: "data"
       }
     }
   }
@@ -47,7 +50,7 @@ const loggerConfig: any = {
   logger: {
     console: {
       handleExceptions: false,
-      level: 'error',
+      level: 'silly',
       colorize: true,
       prettyPrint: true
     }
@@ -64,7 +67,7 @@ const logger = new Logger(loggerConfig.logger);
  */
 function sayHello(call, callback) {
   // send response via callback from RPC
-  callback(null, { message: 'Hello ' + call.request.name });
+  callback(null, { message: 'Hello ' + call.request.name + ' ' + call.request.data.toString() });
 }
 
 describe('grpc-client test', () => {
@@ -93,12 +96,13 @@ describe('grpc-client test', () => {
     should.exist(grpcConfig.endpoints);
     client = new Client(grpcConfig, logger);
     helloService = await client.connect();
-    let result = await helloService.sayHello({ name: 'test' });
-    result.data.message.should.be.equal('Hello test');
+    let result = await helloService.sayHello({ name: 'test', data: Buffer.from('message') });
+    result.data.message.should.be.equal('Hello test message');
   });
   it('request should timeout', async function checkEndpoint() {
     let result = await helloService.sayHello({
-      name: 'test'
+      name: 'test',
+      data: Buffer.from('message')
     },
       {
         // timeout in milliseconds
