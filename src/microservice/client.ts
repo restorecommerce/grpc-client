@@ -118,7 +118,6 @@ function makeServiceEndpoint(name: string, middleware: any,
             case 'unimplemented':
             case 'resource exhausted':
             case 'unknown':
-            case 'internal':
             case 'unavailable':
             case 'data loss':
               logger.error(`attempt ${i}/${attempts} error`, result.error);
