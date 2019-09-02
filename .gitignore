@@ -11,3 +11,4 @@ lib/
 test/*.js
 *.log
 *~
+.nyc_output
