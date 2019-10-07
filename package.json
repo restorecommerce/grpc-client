@@ -43,7 +43,7 @@
   },
   "scripts": {
     "lint": "tslint './src/**/*.ts' './test/*.ts'",
-    "pretest": "npm run tsctests",
+    "pretest": "npm run build && npm run tsctests",
     "tsctests": "tsc -d -p tsconfig.test.json",
     "test": "npm run lint && nyc npm run mocha",
     "test-debug": "cross-env NODE_ENV=test; mocha -R spec ./test/*_test.js --inspect-brk --exit",
