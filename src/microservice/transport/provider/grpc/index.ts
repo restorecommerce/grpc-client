@@ -262,6 +262,18 @@ function makeNormalClientEndpoint(client: any, methodName: any): any {
     catch (err) {
       if (err.message === 'Call cannot be created from a closed channel') {
         err.code = grpc.status.UNAVAILABLE;
+      } else if (err.message.indexOf('invalid argument') > -1) {
+        err.code = grpc.status.INVALID_ARGUMENT;
+      } else if (err.message.indexOf('not found') > -1) {
+        err.code = grpc.status.NOT_FOUND;
+      } else if (err.message.indexOf('already exists') > -1) {
+        err.code = grpc.status.ALREADY_EXISTS;
+      } else if (err.message.indexOf('permission denied') > -1) {
+        err.code = grpc.status.PERMISSION_DENIED;
+      } else if (err.message.indexOf('unauthenticated') > -1) {
+        err.code = grpc.status.UNAUTHENTICATED;
+      } else if (err.message.indexOf('failed precondition') > -1) {
+        err.code = grpc.status.FAILED_PRECONDITION;
       }
       if (err.code) {
         const Err = errorMap.get(err.code);
