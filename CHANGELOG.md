@@ -1,3 +1,7 @@
+### 0.0.4 (November 15th, 2019)
+
+- updated js files
+
 ### 0.0.3 (November 15th, 2019)
 
 - error handling for gRPC streaming
