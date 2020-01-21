@@ -6,7 +6,7 @@ export { grpc };
 export { Client as grpcClient } from './microservice/transport/provider/grpc';
 
 import * as _ from 'lodash';
-export function toStruct(obj: any, fromArray = false): any {
+export const toStruct = (obj: any, fromArray = false): any => {
   const decode = (value: any) => {
     let decodedVal;
     if (_.isNumber(value)) {
@@ -51,4 +51,4 @@ export function toStruct(obj: any, fromArray = false): any {
   }
 
   return struct;
-}
+};

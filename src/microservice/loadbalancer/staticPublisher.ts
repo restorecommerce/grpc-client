@@ -9,9 +9,10 @@ import { fixedPublisher } from './fixedPublisher';
  * @param  factory   Converts instance strings into endpoints.
  * @param  {Object} logger
  */
-async function staticPublisher(instances: string[], factory: any,
-  logger: any): Promise<any> {
-  const endpoints = co(async function send(): Promise<any> {
+const staticPublisher = async(instances: string[], factory: any,
+  logger: any): Promise<any> => {
+  // async function send
+  const endpoints = co(async(): Promise<any> => {
     const epoints = [];
     for (let i = 0; i < instances.length; i += 1) {
       const instance = instances[i];
@@ -33,6 +34,6 @@ async function staticPublisher(instances: string[], factory: any,
     throw err;
   });
   return await fixedPublisher(endpoints);
-}
+};
 
 export { staticPublisher as staticPublisher };

@@ -1,14 +1,19 @@
+*~
+*.log
+# generated JS files & type descriptors
+*.js
+*.d.ts
+
+.directory
+.idea
+.nyc_output
+.project
+.settings
+.vscode
+
+lib/
 node_modules/
 npm-debug.log
 
-.project
-.settings
-.directory
-.vscode
-
-*.js
-lib/
-test/*.js
-*.log
-*~
-.nyc_output
+!.eslintrc.js
+!setupTopics.js

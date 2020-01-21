@@ -10,18 +10,18 @@ import * as grpc from './transport/provider/grpc';
 // loadbalancers
 const loadBalancers: any = {};
 
-export function registerLoadBalancer(name: string, provider: any): void {
+export const registerLoadBalancer = (name: string, provider: any): void => {
   loadBalancers[name] = provider;
-}
+};
 
-function makeRoundRobinLB(config: any, publisher: any, logger: Logger): any {
+const makeRoundRobinLB = (config: any, publisher: any, logger: Logger): any => {
   return loadBalancerLib.roundRobin(publisher, logger);
-}
+};
 
-function makeRandomLB(config: any, publisher: any, logger: Logger): any {
+const makeRandomLB = (config: any, publisher: any, logger: Logger): any => {
   const seed = config.seed || Math.random();
   return loadBalancerLib.random(publisher, seed, logger);
-}
+};
 
 registerLoadBalancer('roundRobin', makeRoundRobinLB);
 registerLoadBalancer('random', makeRandomLB);
@@ -35,9 +35,9 @@ const publishers = {};
  * @param  {string} name     Publisher name
  * @param  {Promise} provider Promise which can be awaited
  */
-export function registerPublisher(name: string, provider: any): void {
+export const registerPublisher = (name: string, provider: any): void => {
   publishers[name] = provider;
-}
+};
 
 /**
  * register default publishers
@@ -45,9 +45,9 @@ export function registerPublisher(name: string, provider: any): void {
  * @param factory
  * @param logger
  */
-function makeStaticPublisher(config: any, factory: any, logger: Logger): any {
+const makeStaticPublisher = (config: any, factory: any, logger: Logger): any => {
   return loadBalancerLib.staticPublisher(config.instances, factory, logger);
-}
+};
 registerPublisher('static', makeStaticPublisher);
 
 // transport providers
@@ -59,17 +59,17 @@ const transportProviders = {};
  * @param  {string} name      transport identifier
  * @param  {constructor} transport Transport provider constructor
  */
-export function registerTransport(name: string, transport: any): void {
+export const registerTransport = (name: string, transport: any): void => {
   transportProviders[name] = transport;
-}
+};
 
 // register default transport providers
 registerTransport(grpc.NAME, grpc.Client);
 
-async function getEndpoint(loadBalancer: any): Promise<any> {
+const getEndpoint = async(loadBalancer: any): Promise<any> => {
   const lbValue = await loadBalancer;
   return lbValue;
-}
+};
 
 /**
  * handles retries, timeout, middleware, calling the loadBalancer
@@ -79,10 +79,9 @@ async function getEndpoint(loadBalancer: any): Promise<any> {
  * @param loadBalancer
  * @param logger
  */
-function makeServiceEndpoint(name: string, middleware: any,
-  loadBalancer: any, logger: Logger, cfg?: any): any {
-  const e = async function handleRetryAndMiddleware(request: any,
-    options: any): Promise<any> {
+const makeServiceEndpoint = (name: string, middleware: any,
+  loadBalancer: any, logger: Logger, cfg?: any): any => {
+  const e = async(request: any, options: any): Promise<any> => { // handleRetryAndMiddleware
     let attempts = 1;
     if (options && options.retry) {
       attempts += options.retry;
@@ -144,7 +143,8 @@ function makeServiceEndpoint(name: string, middleware: any,
       error: errs,
     };
   };
-  return async function handleTimeout(req: any, options: any): Promise<any> {
+  // handleTimeout
+  return async(req: any, options: any): Promise<any> => {
     if (options && options.timeout) {
       const gen = e(req, options);
       let timeout = new Promise((resolve, reject) => {
@@ -158,7 +158,7 @@ function makeServiceEndpoint(name: string, middleware: any,
     }
     return await e(req, options);
   };
-}
+};
 
 /**
  * returns a factory which turns an instance into an endpoint via a transport provider
@@ -166,8 +166,8 @@ function makeServiceEndpoint(name: string, middleware: any,
  * @param transports
  * @param logger
  */
-function generalFactory(method: any, transports: any, logger: Logger): any {
-  return async function makeEndpoints(instance: any): Promise<any> {
+const generalFactory = (method: any, transports: any, logger: Logger): any => {
+  return async(instance: any): Promise<any> => {
     for (let i = 0; i < transports.length; i += 1) {
       try {
         const endpoint = await (transports[i].makeEndpoint(method, instance));
@@ -179,7 +179,7 @@ function generalFactory(method: any, transports: any, logger: Logger): any {
     }
     throw new Error('no endpoint');
   };
-}
+};
 
 /**
  * Microservice client.
@@ -324,7 +324,8 @@ export class Client extends EventEmitter {
     const endpoints = this.endpoints;
     const middleware = this.middleware;
     const thiz = this;
-    const s = await co(function createService(): any {
+    // create service function
+    const s = await co( (): any => {
       const service = {};
       _.forIn(endpoints, (e, name) => {
         const factory = generalFactory(name, transports, logger);
