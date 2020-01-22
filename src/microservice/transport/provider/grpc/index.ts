@@ -33,41 +33,10 @@ const errorMap = new Map([
   [grpc.status.DATA_LOSS, errors.DataLoss],
 ]);
 
-/**
- * wrapClientEndpoint wraps the method of conn into an endpoint.
- *
- * @param  {Object} conn   A gRPC Client.
- * @param  {string} method The endpoint method name of the service.
- * @param  {object} stream Settings for request,response or bi directional stream.
- * @return {object|Promise} Returns a Promise for normal RPC.
- * Returns an object for streaming RPC.
- */
-function wrapClientEndpoint(client: Object, methodName: string,
-  stream: any): any {
-  if (_.isNil(client)) {
-    throw new Error('missing argument client');
-  }
-  if (_.isNil(methodName)) {
-    throw new Error('missing argument methodName');
-  }
-  if (!client[methodName]) {
-    throw new Error(`conn has no method ${methodName}`);
-  }
-  if (stream.requestStream && stream.responseStream) {
-    return makeBiDirectionalStreamClientEndpoint(client, methodName);
-  }
-  if (stream.requestStream) {
-    return makeRequestStreamClientEndpoint(client, methodName);
-  }
-  if (stream.responseStream) {
-    return makeResponseStreamClientEndpoint(client, methodName);
-  }
-  return makeNormalClientEndpoint(client, methodName);
-}
-
-function makeBiDirectionalStreamClientEndpoint(client: any,
-  methodName: any): any {
-  return async function biDirectionalStreamClientEndpoint(): Promise<any> {
+const makeBiDirectionalStreamClientEndpoint = (client: any,
+  methodName: any): any => {
+  // async function biDirectionalStreamClientEndpoint
+  return async(): Promise<any> => {
     const responses = [];
     const fns = [];
     let end = false;
@@ -109,11 +78,12 @@ function makeBiDirectionalStreamClientEndpoint(client: any,
       }
     });
     return {
-      async write(request: any, context: any): Promise<any> {
+      // write
+      write: async(request: any, context: any): Promise<any> => {
         call.write(request);
       },
-      async read(): Promise<any> {
-        return await function r(cb: any): any {
+      read: async(): Promise<any> => {
+        return async(cb: any): Promise<any> => {
           if (responses.length) {
             cb(null, responses.shift());
           } else if (end) {
@@ -123,15 +93,16 @@ function makeBiDirectionalStreamClientEndpoint(client: any,
           }
         };
       },
-      async end(): Promise<any> {
+      end: async(): Promise<any> => {
         call.end();
       },
     };
   };
-}
+};
 
-function makeRequestStreamClientEndpoint(client: any, methodName: any): any {
-  return async function requestStreamClientEndpoint(): Promise<any> {
+const makeRequestStreamClientEndpoint = (client: any, methodName: any): any => {
+  // requestStreamClientEndpoint()
+  return async(): Promise<any> => {
     const responses = [];
     const fns = [];
     let end = false;
@@ -179,11 +150,11 @@ function makeRequestStreamClientEndpoint(client: any, methodName: any): any {
       }
     });
     return {
-      async write(request: any, context: any): Promise<any> {
+      write: async(request: any, context: any): Promise<any> => {
         call.write(request);
       },
-      async end(): Promise<any> {
-        return await function r(cb: any): any {
+      end: async(): Promise<any> => {
+        return async(cb: any): Promise<any> => {
           call.end();
           if (responses.length) {
             cb(null, responses.shift());
@@ -196,11 +167,12 @@ function makeRequestStreamClientEndpoint(client: any, methodName: any): any {
       },
     };
   };
-}
+};
 
-function makeResponseStreamClientEndpoint(client: any, methodName: any): any {
-  return async function responseStreamClientEndpoint(request: any,
-    context: any): Promise<any> {
+const makeResponseStreamClientEndpoint = (client: any, methodName: any): any => {
+  // responseStreamClientEndpoint
+  return async(request: any,
+    context: any): Promise<any> => {
     const responses = [];
     const fns = [];
     let end = false;
@@ -243,8 +215,8 @@ function makeResponseStreamClientEndpoint(client: any, methodName: any): any {
       }
     });
     return {
-      async read(): Promise<any> {
-        return await (function r(cb: any): any {
+      read: async(): Promise<any> => {
+        return (async(cb: any): Promise<any> => {
           if (responses.length) {
             cb(null, responses.shift());
           } else if (end) {
@@ -256,17 +228,17 @@ function makeResponseStreamClientEndpoint(client: any, methodName: any): any {
       },
     };
   };
-}
+};
 
-function makeNormalClientEndpoint(client: any, methodName: any): any {
-  return async function normalClientEndpoint(request: any, context: any):
-    Promise<any> {
+const makeNormalClientEndpoint = (client: any, methodName: any): any => {
+  // normalClientEndpoint
+  return async(request: any, context: any): Promise<any> => {
     const options: any = {};
     if (_.has(context, 'timeout')) {
       options.deadline = Date.now() + context.timeout;
     }
     const req = request || {};
-    function callEndpoint(): any {
+    const callEndpoint = (): any => {
       return new Promise((resolve, reject) => {
         try {
           let meta = new grpc.Metadata();
@@ -285,7 +257,7 @@ function makeNormalClientEndpoint(client: any, methodName: any): any {
           reject(err);
         }
       });
-    }
+    };
 
     try {
       const result = await callEndpoint();
@@ -322,7 +294,38 @@ function makeNormalClientEndpoint(client: any, methodName: any): any {
       throw err;
     }
   };
-}
+};
+
+/**
+ * wrapClientEndpoint wraps the method of conn into an endpoint.
+ *
+ * @param  {Object} conn   A gRPC Client.
+ * @param  {string} method The endpoint method name of the service.
+ * @param  {object} stream Settings for request,response or bi directional stream.
+ * @return {object|Promise} Returns a Promise for normal RPC.
+ * Returns an object for streaming RPC.
+ */
+const wrapClientEndpoint = (client: Object, methodName: string, stream: any): any => {
+  if (_.isNil(client)) {
+    throw new Error('missing argument client');
+  }
+  if (_.isNil(methodName)) {
+    throw new Error('missing argument methodName');
+  }
+  if (!client[methodName]) {
+    throw new Error(`conn has no method ${methodName}`);
+  }
+  if (stream.requestStream && stream.responseStream) {
+    return makeBiDirectionalStreamClientEndpoint(client, methodName);
+  }
+  if (stream.requestStream) {
+    return makeRequestStreamClientEndpoint(client, methodName);
+  }
+  if (stream.responseStream) {
+    return makeResponseStreamClientEndpoint(client, methodName);
+  }
+  return makeNormalClientEndpoint(client, methodName);
+};
 
 /**
  * Client is a gRPC transport provider for calling endpoints.
@@ -413,7 +416,8 @@ export class Client {
     const conn = new this.service(host, credentials);
     if (this.config.timeout) {
       const deadline = Date.now() + this.config.timeout;
-      const wait = function waitWrapper(): any {
+      // waitWrapper
+      const wait = (): any => {
         return (() => {
           return (callback: any): any => {
             grpc.waitForClientReady(conn, deadline, (err) => {

@@ -3,7 +3,7 @@
  *
  * @param  {array.Promise} endpoints   Fixed endpoints.
  */
-export async function fixedPublisher(endpoints: any): Promise<any> {
+export const fixedPublisher = async (endpoints: any): Promise<any> => {
   const value = await (endpoints);
   return value;
-}
+};
