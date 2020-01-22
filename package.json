@@ -47,6 +47,7 @@
     "typescript": "^3.6.3"
   },
   "scripts": {
+    "postinstall": "tsc -d",
     "lint": "eslint src --ext .ts",
     "pretest": "npm run build && npm run tsctests",
     "tsctests": "tsc -d -p tsconfig.test.json",
