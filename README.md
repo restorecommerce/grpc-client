@@ -26,6 +26,8 @@ Although the main transport is gRPC, the client's configuration options are flex
 
 For a simple example on how to use this client with a generic gRPC server check the [test cases](https://github.com/restorecommerce/grpc-client/tree/master/test). The `connect` method as well as all exposed RPC calls are async.
 
+When testing with other services first clone the git branch and then add `"postinstall": "tsc -d"` to compile the required src files
+
 - Install dependencies
 
 ```sh
