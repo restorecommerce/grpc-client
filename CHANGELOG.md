@@ -1,3 +1,7 @@
+### 0.0.5 (January 29th, 2020)
+
+- migrated from tslint to eslint and restructured src files
+
 ### 0.0.4 (November 15th, 2019)
 
 - updated js files
