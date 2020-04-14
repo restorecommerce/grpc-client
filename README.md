@@ -1,7 +1,8 @@
 # grpc-client
-<img src="http://img.shields.io/npm/v/%40restorecommerce%2Fgrpc%2Dclient.svg?style=flat-square" alt="">[![Build Status][build]](https://travis-ci.org/restorecommerce/grpc-client?branch=master)[![Dependencies][depend]](https://david-dm.org/restorecommerce/grpc-client)[![Coverage Status][cover]](https://coveralls.io/github/restorecommerce/grpc-client?branch=master)
 
-[version]: http://img.shields.io/npm/v/grpc-client.svg?style=flat-square
+[![Version][version]](https://www.npmjs.com/package/@restorecommerce/grpc-client)[![Build Status][build]](https://travis-ci.org/restorecommerce/grpc-client?branch=master)[![Dependencies][depend]](https://david-dm.org/restorecommerce/grpc-client)[![Coverage Status][cover]](https://coveralls.io/github/restorecommerce/grpc-client?branch=master)
+
+[version]: http://img.shields.io/npm/v/@restorecommerce/grpc-client.svg?style=flat-square
 [build]: http://img.shields.io/travis/restorecommerce/grpc-client/master.svg?style=flat-square
 [depend]: https://img.shields.io/david/restorecommerce/grpc-client.svg?style=flat-square
 [cover]: http://img.shields.io/coveralls/restorecommerce/grpc-client/master.svg?style=flat-square
