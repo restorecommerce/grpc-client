@@ -1,3 +1,7 @@
+### 0.0.6 (July 8th, 2020)
+
+- updated dependencies
+
 ### 0.0.5 (January 29th, 2020)
 
 - migrated from tslint to eslint and restructured src files
