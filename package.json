@@ -6,7 +6,7 @@
   "author": "Invend GmbH",
   "repository": {
     "type": "git",
-    "url": "https://github.com/restorecommerc/grpc-client.git"
+    "url": "https://github.com/restorecommerce/grpc-client.git"
   },
   "license": "MIT",
   "keywords": [
