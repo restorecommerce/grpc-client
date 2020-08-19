@@ -1,3 +1,7 @@
+### 0.0.7 (August 19th, 2020)
+
+- updated logger and rtracer
+
 ### 0.0.6 (July 8th, 2020)
 
 - updated dependencies

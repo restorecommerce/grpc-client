@@ -242,7 +242,7 @@ const makeNormalClientEndpoint = (client: any, methodName: any): any => {
       return new Promise((resolve, reject) => {
         try {
           let meta = new grpc.Metadata();
-          const rid = rTracer.id();
+          const rid: any = rTracer.id();
           if (rid) {
             meta.add('rid', rid);
           }
