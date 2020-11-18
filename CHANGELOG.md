@@ -1,3 +1,7 @@
+### 0.0.8 (November 18th, 2020)
+
+- updated logger and rtracer
+
 ### 0.0.7 (August 19th, 2020)
 
 - updated logger and rtracer
