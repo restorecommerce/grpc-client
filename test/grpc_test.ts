@@ -1,7 +1,7 @@
 import { Client } from './../lib/microservice/client';
 import * as grpc from 'grpc';
 import * as should from 'should';
-import { Logger } from '@restorecommerce/logger';
+import { createLogger } from '@restorecommerce/logger';
 
 const grpcClientCfg = {
   client: {
@@ -60,7 +60,7 @@ const loggerConfig: any = {
 
 const PROTO_PATH = './protos/helloworld/hello_world.proto';
 const hello_proto: any = grpc.load(PROTO_PATH).helloworld;
-const logger = new Logger(loggerConfig.logger);
+const logger = createLogger(loggerConfig.logger);
 
 /**
  * Implementation of sayHello RPC method.

@@ -1,7 +1,7 @@
 import { Client } from './../lib/microservice/transport/provider/grpc/index';
 import * as grpc from 'grpc';
 import * as should from 'should';
-import { Logger } from '@restorecommerce/logger';
+import { createLogger } from '@restorecommerce/logger';
 import * as co from 'co';
 
 const grpcClientCfg = {
@@ -48,7 +48,7 @@ const loggerConfig: any = {
 
 const STREAM_PROTO_PATH = './protos/test/test.proto';
 const stream_proto: any = grpc.load(STREAM_PROTO_PATH).test;
-const logger = new Logger(loggerConfig.logger);
+const logger = createLogger(loggerConfig.logger);
 
 async function requestStream(call, callback) {
   const requests = [];

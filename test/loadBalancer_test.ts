@@ -1,5 +1,5 @@
 import * as loadbalancer from '../lib/microservice/loadbalancer';
-import { Logger } from '@restorecommerce/logger';
+import { createLogger } from '@restorecommerce/logger';
 import * as should from 'should';
 
 const loggerConfig: any = {
@@ -12,7 +12,7 @@ const loggerConfig: any = {
     }
   }
 };
-const logger: any = new Logger(loggerConfig.logger);
+const logger: any = createLogger(loggerConfig.logger);
 
 /* global describe it */
 

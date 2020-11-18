@@ -1,5 +1,5 @@
 import * as mocha from 'mocha';
-import { Logger } from '@restorecommerce/logger';
+import { createLogger } from '@restorecommerce/logger';
 import { Client as grpcClient } from '../lib/microservice/transport/provider/grpc';
 import * as grpc from 'grpc';
 import * as should from 'should';
@@ -36,7 +36,7 @@ const loggerConfig: any = {
 };
 const PROTO_PATH = './protos/test/test.proto';
 const test_proto: any = grpc.load(PROTO_PATH).test;
-const logger = new Logger(loggerConfig.logger);
+const logger = createLogger(loggerConfig.logger);
 
 /**
  * Implementation of  test RPC method.

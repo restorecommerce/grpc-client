@@ -1,12 +1,10 @@
 import * as path from 'path';
 import * as url from 'url';
 import * as grpc from 'grpc';
-import * as co from 'co';
-import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as errors from '../../../errors';
 import * as rTracer from 'cls-rtracer';
-import { Logger } from '../../../../logger';
+import { Logger } from 'winston';
 
 /**
  * Name of the transport
