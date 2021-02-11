@@ -130,18 +130,12 @@ describe('grpc-streaming tests', () => {
     async function checkEndpoint() {
       const responseStream = client.makeEndpoint('responseStream', instance);
       let call = await responseStream({ value: 'ping' });
-      let streamingResponse = [];
-      for (let i = 0; i < 3; i++) {
-        // get the EP
-        streamingResponse[i] = await co(call.read((err, data) => { }));
-        const data = await new Promise((resolve, reject) => {
-          streamingResponse[i]((err, data) => {
-            resolve(data);
-            should.exist(data.result);
-            data.result.should.equal('pong');
-          });
-        });
-      }
+      // let streamingResponse = [];
+      const respStream = call.getResponseStream();
+      respStream.on('data', (data) => {
+        should.exist(data.result);
+        data.result.should.equal('pong');
+      });
     });
 
   it('should connect to server and return streaming response for streaming request',

@@ -71,8 +71,12 @@ const makeBiDirectionalStreamClientEndpoint = (client: any,
         err.code = grpc.status.FAILED_PRECONDITION;
       }
       if (err.code) {
-        const Err = errorMap.get(err.code);
-        const instance = new Err(err.details);
+        let Err = errorMap.get(err.code);
+        if (!Err) {
+          err.code = grpc.status.UNKNOWN;
+        }
+        const message = err.details ? err.details : err.message;
+        const instance = new Err(message);
         fns.shift()(instance, null);
       }
     });
@@ -141,12 +145,14 @@ const makeRequestStreamClientEndpoint = (client: any, methodName: any): any => {
         err.code = grpc.status.UNAUTHENTICATED;
       } else if (err.message.indexOf('failed precondition') > -1) {
         err.code = grpc.status.FAILED_PRECONDITION;
-      } else {
-        err.code = grpc.status.INTERNAL;
       }
       if (err.code) {
-        const Err = errorMap.get(err.code);
-        const instance = new Err(err.details);
+        let Err = errorMap.get(err.code);
+        if (!Err) {
+          err.code = grpc.status.UNKNOWN;
+        }
+        const message = err.details ? err.details : err.message;
+        const instance = new Err(message);
         fns.shift()(instance, null);
       }
     });
@@ -193,12 +199,14 @@ const makeResponseStreamClientEndpoint = (client: any, methodName: any): any => 
         err.code = grpc.status.UNAUTHENTICATED;
       } else if (err.message.indexOf('failed precondition') > -1) {
         err.code = grpc.status.FAILED_PRECONDITION;
-      } else {
-        err.code = grpc.status.INTERNAL;
       }
       if (err.code) {
-        const Err = errorMap.get(err.code);
-        const instance = new Err(err.details);
+        let Err = errorMap.get(err.code);
+        if (!Err) {
+          err.code = grpc.status.UNKNOWN;
+        }
+        const message = err.details ? err.details : err.message;
+        const instance = new Err(message);
         call.emit('errorResolved', instance);
       }
     });
@@ -262,12 +270,15 @@ const makeNormalClientEndpoint = (client: any, methodName: any): any => {
         err.code = grpc.status.UNAUTHENTICATED;
       } else if (err.message.indexOf('failed precondition') > -1) {
         err.code = grpc.status.FAILED_PRECONDITION;
-      } else {
-        err.code = grpc.status.INTERNAL;
       }
       if (err.code) {
         const Err = errorMap.get(err.code);
         if (Err) {
+          return {
+            error: new Err(err.message),
+          };
+        } else {
+          const Err = errorMap.get(grpc.status.UNKNOWN);
           return {
             error: new Err(err.message),
           };
