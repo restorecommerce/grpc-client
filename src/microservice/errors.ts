@@ -232,3 +232,20 @@ export class DataLoss extends Error {
     this.details = details;
   }
 }
+
+/**
+ *
+ * errors raised by APIs that do not return enough error information
+ * may be converted to this error.
+ */
+export class Unknown extends Error {
+  details: any;
+  name: string;
+  message: string;
+  constructor(details: any) {
+    super();
+    this.name = this.constructor.name;
+    this.message = 'Unknown Error';
+    this.details = details;
+  }
+}

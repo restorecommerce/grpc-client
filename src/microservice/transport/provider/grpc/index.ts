@@ -29,6 +29,7 @@ const errorMap = new Map([
   [grpc.status.INTERNAL, errors.Internal],
   [grpc.status.UNAVAILABLE, errors.Unavailable],
   [grpc.status.DATA_LOSS, errors.DataLoss],
+  [grpc.status.UNKNOWN, errors.Unknown],
 ]);
 
 const makeBiDirectionalStreamClientEndpoint = (client: any,
@@ -62,7 +63,7 @@ const makeBiDirectionalStreamClientEndpoint = (client: any,
         err.code = grpc.status.NOT_FOUND;
       } else if (err.message.indexOf('already exists') > -1) {
         err.code = grpc.status.ALREADY_EXISTS;
-      } else if (err.message.indexOf('permission denied') > -1) {
+      } else if (err.message.indexOf('Access not allowed') > -1) {
         err.code = grpc.status.PERMISSION_DENIED;
       } else if (err.message.indexOf('unauthenticated') > -1) {
         err.code = grpc.status.UNAUTHENTICATED;
@@ -134,12 +135,14 @@ const makeRequestStreamClientEndpoint = (client: any, methodName: any): any => {
         err.code = grpc.status.NOT_FOUND;
       } else if (err.message.indexOf('already exists') > -1) {
         err.code = grpc.status.ALREADY_EXISTS;
-      } else if (err.message.indexOf('permission denied') > -1) {
+      } else if (err.message.indexOf('Access not allowed') > -1) {
         err.code = grpc.status.PERMISSION_DENIED;
       } else if (err.message.indexOf('unauthenticated') > -1) {
         err.code = grpc.status.UNAUTHENTICATED;
       } else if (err.message.indexOf('failed precondition') > -1) {
         err.code = grpc.status.FAILED_PRECONDITION;
+      } else {
+        err.code = grpc.status.INTERNAL;
       }
       if (err.code) {
         const Err = errorMap.get(err.code);
@@ -171,59 +174,38 @@ const makeResponseStreamClientEndpoint = (client: any, methodName: any): any => 
   // responseStreamClientEndpoint
   return async(request: any,
     context: any): Promise<any> => {
-    const responses = [];
-    const fns = [];
-    let end = false;
     let req = request || {};
     const call = client[methodName](req);
-    call.on('data', (response) => {
-      if (fns.length) {
-        fns.shift()(null, response);
-      } else {
-        responses.push(response);
-      }
-    });
-    call.on('end', () => {
-      end = true;
-      while (fns.length) {
-        fns.shift()(new Error('stream end'), null);
-      }
-    });
     call.on('error', (err) => {
-      end = true;
       if (err.details === 'Connect Failed') {
         err.code = grpc.status.UNAVAILABLE;
       } else if (err.message.indexOf('invalid argument') > -1) {
         err.code = grpc.status.INVALID_ARGUMENT;
       } else if (err.message.indexOf('not found') > -1) {
         err.code = grpc.status.NOT_FOUND;
+      } else if(err.message.indexOf('key does not exist') > -1) {
+        err.code = grpc.status.NOT_FOUND;
       } else if (err.message.indexOf('already exists') > -1) {
         err.code = grpc.status.ALREADY_EXISTS;
-      } else if (err.message.indexOf('permission denied') > -1) {
+      } else if (err.message.indexOf('Access not allowed') > -1) {
         err.code = grpc.status.PERMISSION_DENIED;
       } else if (err.message.indexOf('unauthenticated') > -1) {
         err.code = grpc.status.UNAUTHENTICATED;
       } else if (err.message.indexOf('failed precondition') > -1) {
         err.code = grpc.status.FAILED_PRECONDITION;
+      } else {
+        err.code = grpc.status.INTERNAL;
       }
       if (err.code) {
         const Err = errorMap.get(err.code);
         const instance = new Err(err.details);
-        fns.shift()(instance, null);
+        call.emit('errorResolved', instance);
       }
     });
     return {
-      read: async(): Promise<any> => {
-        return (async(cb: any): Promise<any> => {
-          if (responses.length) {
-            cb(null, responses.shift());
-          } else if (end) {
-            throw new Error('stream end');
-          } else {
-            fns.push(cb);
-          }
-        });
-      },
+      getResponseStream: () => {
+        return call;
+      }
     };
   };
 };
@@ -274,12 +256,14 @@ const makeNormalClientEndpoint = (client: any, methodName: any): any => {
         err.code = grpc.status.NOT_FOUND;
       } else if (err.message.indexOf('already exists') > -1) {
         err.code = grpc.status.ALREADY_EXISTS;
-      } else if (err.message.indexOf('permission denied') > -1) {
+      } else if (err.message.indexOf('Access not allowed') > -1) {
         err.code = grpc.status.PERMISSION_DENIED;
       } else if (err.message.indexOf('unauthenticated') > -1) {
         err.code = grpc.status.UNAUTHENTICATED;
       } else if (err.message.indexOf('failed precondition') > -1) {
         err.code = grpc.status.FAILED_PRECONDITION;
+      } else {
+        err.code = grpc.status.INTERNAL;
       }
       if (err.code) {
         const Err = errorMap.get(err.code);
