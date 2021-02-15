@@ -1,3 +1,8 @@
+### 0.0.9 (February 15th, 2021)
+
+- fix for streaming request and streaming response to return streaming object instead of chunk data
+- updated logger and grpc
+
 ### 0.0.8 (November 18th, 2020)
 
 - updated logger and rtracer
