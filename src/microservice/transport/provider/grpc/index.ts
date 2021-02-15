@@ -112,6 +112,31 @@ const makeRequestStreamClientEndpoint = (client: any, methodName: any): any => {
     const call = client[methodName]((err, response) => {
       if (fns.length) {
         fns.shift()(err, response);
+      } else if (err) {
+        if (err.details === 'Connect Failed') {
+          err.code = grpc.status.UNAVAILABLE;
+        } else if (err.message.indexOf('invalid argument') > -1) {
+          err.code = grpc.status.INVALID_ARGUMENT;
+        } else if (err.message.indexOf('not found') > -1) {
+          err.code = grpc.status.NOT_FOUND;
+        } else if (err.message.indexOf('already exists') > -1) {
+          err.code = grpc.status.ALREADY_EXISTS;
+        } else if (err.message.indexOf('Access not allowed') > -1) {
+          err.code = grpc.status.PERMISSION_DENIED;
+        } else if (err.message.indexOf('unauthenticated') > -1) {
+          err.code = grpc.status.UNAUTHENTICATED;
+        } else if (err.message.indexOf('failed precondition') > -1) {
+          err.code = grpc.status.FAILED_PRECONDITION;
+        }
+        if (err.code) {
+          let Err = errorMap.get(err.code);
+          if (!Err) {
+            err.code = grpc.status.UNKNOWN;
+          }
+          const message = err.details ? err.details : err.message;
+          const instance = new Err(message);
+          responses.push(instance);
+        }
       } else {
         responses.push(response);
       }
@@ -127,33 +152,6 @@ const makeRequestStreamClientEndpoint = (client: any, methodName: any): any => {
       end = true;
       while (fns.length) {
         fns.shift()(new Error('stream end'), null);
-      }
-    });
-    call.on('error', (err) => {
-      end = true;
-      if (err.details === 'Connect Failed') {
-        err.code = grpc.status.UNAVAILABLE;
-      } else if (err.message.indexOf('invalid argument') > -1) {
-        err.code = grpc.status.INVALID_ARGUMENT;
-      } else if (err.message.indexOf('not found') > -1) {
-        err.code = grpc.status.NOT_FOUND;
-      } else if (err.message.indexOf('already exists') > -1) {
-        err.code = grpc.status.ALREADY_EXISTS;
-      } else if (err.message.indexOf('Access not allowed') > -1) {
-        err.code = grpc.status.PERMISSION_DENIED;
-      } else if (err.message.indexOf('unauthenticated') > -1) {
-        err.code = grpc.status.UNAUTHENTICATED;
-      } else if (err.message.indexOf('failed precondition') > -1) {
-        err.code = grpc.status.FAILED_PRECONDITION;
-      }
-      if (err.code) {
-        let Err = errorMap.get(err.code);
-        if (!Err) {
-          err.code = grpc.status.UNKNOWN;
-        }
-        const message = err.details ? err.details : err.message;
-        const instance = new Err(message);
-        fns.shift()(instance, null);
       }
     });
     return {
